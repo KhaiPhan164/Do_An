@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Blog
+{% endblock %}
+
+{% block content %}
+
+<section>
+    <div class="container">
+        <div class="row">
+
+            <!-- Menu bên trái -->
+            <div class="col-sm-3">
+                {% include 'menuLeft.html' %}
+            </div>
+
+
+            <!-- Blog List -->
+            <div class="col-sm-9">
+
+                <div class="blog-post-area">
+
+                    <h2 class="title text-center">
+                        Latest From our Blog
+                    </h2>
+
+
+                    <!-- Danh sách bài viết -->
+                    {% for blog in page_obj %}
+
+                    <div class="single-blog-post">
+
+                        <!-- Tiêu đề -->
+                        <h3>
+                            <a href="{% url 'blog:blog_detail' blog.id %}">
+                                {{ blog.title }}
+                            </a>
+                        </h3>
+
+
+                        <!-- Thông tin bài viết -->
+                        <div class="post-meta">
+                            <ul>
+
+                                <li>
+                                    <i class="fa fa-user"></i>
+                                    {{ blog.author.username }}
+                                </li>
+
+                                {% if blog.created_at %}
+
+                                <li>
+                                    <i class="fa fa-clock-o"></i>
+                                    {{ blog.created_at|date:"h:i A" }}
+                                </li>
+
+                                <li>
+                                    <i class="fa fa-calendar"></i>
+                                    {{ blog.created_at|date:"d M Y" }}
+                                </li>
+
+                                {% endif %}
+
+                            </ul>
+                        </div>
+
+
+                        <!-- Ảnh -->
+                        {% if blog.image %}
+
+                        <a href="{% url 'blog:blog_detail' blog.id %}">
+
+                            <img
+                                src="{{ blog.image.url }}"
+                                alt="{{ blog.title }}"
+                                style="
+                                    width: 100%;
+                                    height: auto;
+                                    object-fit: cover;
+                                "
+                            >
+
+                        </a>
+
+                        {% endif %}
+
+
+                        <!-- Mô tả -->
+                        {% if blog.des %}
+
+                        <p>
+                            {{ blog.des|truncatewords:50 }}
+                        </p>
+
+                        {% else %}
+
+                        <p>
+                            {{ blog.content|striptags|truncatewords:50 }}
+                        </p>
+
+                        {% endif %}
+
+
+                        <!-- Read More -->
+                        <a
+                            class="btn btn-primary"
+                            href="{% url 'blog:blog_detail' blog.id %}"
+                        >
+                            Read More
+                        </a>
+
+                    </div>
+
+
+                    {% empty %}
+
+                    <p>
+                        Chưa có bài viết nào.
+                    </p>
+
+                    {% endfor %}
+
+
+
+                    <!-- ======================= -->
+                    <!-- PHÂN TRANG -->
+                    <!-- ======================= -->
+
+                    {% if page_obj.paginator.num_pages > 1 %}
+
+                    <div class="pagination-area">
+
+                        <ul class="pagination">
+
+
+                            <!-- Previous -->
+                            {% if page_obj.has_previous %}
+
+                            <li>
+                                <a href="?page={{ page_obj.previous_page_number }}">
+
+                                    <i class="fa fa-angle-double-left"></i>
+
+                                </a>
+                            </li>
+
+                            {% endif %}
+
+
+
+                            <!-- Số trang -->
+                            {% for num in page_obj.paginator.page_range %}
+
+
+                                {% if page_obj.number == num %}
+
+                                <li>
+                                    <a
+                                        href="?page={{ num }}"
+                                        class="active"
+                                    >
+                                        {{ num }}
+                                    </a>
+                                </li>
+
+
+                                {% else %}
+
+                                <li>
+                                    <a href="?page={{ num }}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+
+                                {% endif %}
+
+
+                            {% endfor %}
+
+
+
+                            <!-- Next -->
+                            {% if page_obj.has_next %}
+
+                            <li>
+                                <a href="?page={{ page_obj.next_page_number }}">
+
+                                    <i class="fa fa-angle-double-right"></i>
+
+                                </a>
+                            </li>
+
+                            {% endif %}
+
+
+                        </ul>
+
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

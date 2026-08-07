@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, country
+from .models import User, Country
 # Register your models here.
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -7,7 +7,7 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('username', 'email')
     list_filter = ('created_at',)
 
-@admin.register(country)
-class countryAdmin(admin.ModelAdmin):
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)

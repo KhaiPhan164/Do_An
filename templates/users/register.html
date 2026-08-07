@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Đăng ký
+{% endblock %}
+
+{% block content %}
+
+<section style="margin-top: 30px; margin-bottom: 50px;">
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="col-sm-3">
+                {% include 'menuLeft.html' %}
+            </div>
+
+            
+            <div class="col-sm-9">
+                <div class="signup-form">
+
+                    <h2>Đăng ký</h2>
+
+                    <form
+                        method="post"
+                        enctype="multipart/form-data"
+                        novalidate
+                    >
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}">
+                                Username:
+                            </label>
+
+                            {{ form.username }}
+
+                            {% for error in form.username.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <small>
+                                Required. 150 characters or fewer.
+                                Letters, digits and @/./+/-/_ only.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">
+                                Email address:
+                            </label>
+
+                            {{ form.email }}
+
+                            {% for error in form.email.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.password1.id_for_label }}">
+                                Password:
+                            </label>
+
+                            {{ form.password1 }}
+
+                            {% for error in form.password1.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.password2.id_for_label }}">
+                                Confirm password:
+                            </label>
+
+                            {{ form.password2 }}
+
+                            {% for error in form.password2.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.avatar.id_for_label }}">
+                                Avatar:
+                            </label>
+
+                            {{ form.avatar }}
+
+                            {% for error in form.avatar.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}">
+                                First name:
+                            </label>
+
+                            {{ form.first_name }}
+
+                            {% for error in form.first_name.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}">
+                                Last name:
+                            </label>
+
+                            {{ form.last_name }}
+
+                            {% for error in form.last_name.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.id_country.id_for_label }}">
+                                Id country:
+                            </label>
+
+                            {{ form.id_country }}
+
+                            {% for error in form.id_country.errors %}
+                                <p class="text-danger">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-default"
+                        >
+                            Đăng ký
+                        </button>
+
+                        <p style="margin-top: 15px;">
+                            Đã có tài khoản?
+
+                            <a href="{% url 'users:login' %}">
+                                Đăng nhập
+                            </a>
+                        </p>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

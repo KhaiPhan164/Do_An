@@ -1,15 +1,48 @@
-from django.shortcuts import render
-from django.db import models
-from ckeditor_uploader.fields import RichTextUploadingField
+from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
 
-# Create your views here.
-class Blog(models.Model):
-    title = models.CharField(max_length=200)
-    des = models.TextField()
-    content = RichTextUploadingField()
-    image = models.ImageField(upload_to='blogs/')
-    created_at = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey('shoppe.User', on_delete=models.CASCADE, null=True, blank=True)
+from .models import Blog
 
-    def __str__(self):
-        return self.title
+
+def blog_list(request):
+
+    blogs = Blog.objects.all().order_by('-created_at')
+
+    paginator = Paginator(blogs, 3)
+
+    page_number = request.GET.get('page')
+
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        'blog/blog.html',
+        {
+            'page_obj': page_obj
+        }
+    )
+
+
+def blog_detail(request, blog_id):
+    blog = get_object_or_404(
+        Blog,
+        id=blog_id
+    )
+
+    previous_blog = Blog.objects.filter(
+        id__gt=blog.id
+    ).order_by('id').first()
+
+    next_blog = Blog.objects.filter(
+        id__lt=blog.id
+    ).order_by('-id').first()
+
+    return render(
+        request,
+        'blog/blog-detail.html',
+        {
+            'blog': blog,
+            'previous_blog': previous_blog,
+            'next_blog': next_blog,
+        }
+    )
