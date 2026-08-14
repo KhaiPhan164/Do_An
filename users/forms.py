@@ -27,3 +27,30 @@ class RegistrationForm(UserCreationForm):
             'avatar',
             'id_country',
         )
+
+class AccountUpdateForm(forms.ModelForm):
+    password1 = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput,
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'avatar',
+            'id_country',
+        )
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'avatar': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+            'id_country': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+        

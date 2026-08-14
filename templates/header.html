@@ -2,7 +2,7 @@
 
 <header id="header">
 
-    
+
     <div class="header_top">
         <div class="container">
             <div class="row">
@@ -70,10 +70,10 @@
             </div>
         </div>
     </div>
-    
 
 
-    
+
+
     <div class="header-middle">
         <div class="container">
             <div class="row">
@@ -133,7 +133,7 @@
 
                     <div class="shop-menu clearfix pull-right">
                         <ul class="nav navbar-nav">
-
+                            {% if request.user.is_authenticated %}
                             <li>
                                 <a href="/account/">
                                     <i class="fa fa-user"></i>
@@ -161,8 +161,6 @@
                                     Cart
                                 </a>
                             </li>
-
-                            {% if request.user.is_authenticated %}
 
                             <li>
                                 <a href="#">
@@ -207,10 +205,10 @@
             </div>
         </div>
     </div>
-    
 
 
-    
+
+
     <div class="header-bottom">
         <div class="container">
             <div class="row">
@@ -328,6 +326,6 @@
             </div>
         </div>
     </div>
-    
+
 
 </header>

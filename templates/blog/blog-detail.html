@@ -1,148 +1,272 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
-    {{ blog.title }}
+{{ blog.title }}
 {% endblock %}
 
 {% block content %}
 
-<section>
-    <div class="container">
-
-        <div class="row">
-
-            
-            <div class="col-sm-3">
-                {% include 'menuLeft.html' %}
-            </div>
 
 
-            
-            <div class="col-sm-9">
+<div class="row">
 
-                <div class="blog-post-area">
+    <div class="col-sm-3">
+        {% include 'menuLeft.html' %}
+    </div>
 
-                    <h2 class="title text-center">
-                        Blog Detail
-                    </h2>
+    <div class="col-sm-9">
+
+        <div class="blog-post-area">
+
+            <h2 class="title text-center">
+                Blog Detail
+            </h2>
+
+            <div class="single-blog-post">
+
+                <h3>
+                    {{ blog.title }}
+                </h3>
+
+                <div class="post-meta">
+
+                    <ul>
+
+                        <li>
+                            <i class="fa fa-user"></i>
+                            {{ blog.author.username }}
+                        </li>
+
+                        <li>
+                            <i class="fa fa-clock-o"></i>
+                            {{ blog.created_at|date:"h:i A" }}
+                        </li>
+
+                        <li>
+                            <i class="fa fa-calendar"></i>
+                            {{ blog.created_at|date:"d M Y" }}
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                {% if blog.image %}
+
+                <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="
+                        width: 100%;
+                        height: auto;
+                        margin-bottom: 25px;
+                    ">
+
+                {% endif %}
+
+                <div class="blog-content">
+
+                    {{ blog.content|safe }}
+
+                </div>
+
+                <div class="rate">
+
+                    <h4>
+                        Rate this blog
+                    </h4>
+
+                    <div class="vote">
+
+                        <div class="star_1 ratings_stars" data-rate="1">
+                        </div>
+
+                        <div class="star_2 ratings_stars" data-rate="2">
+                        </div>
+
+                        <div class="star_3 ratings_stars" data-rate="3">
+                        </div>
+
+                        <div class="star_4 ratings_stars" data-rate="4">
+                        </div>
+
+                        <div class="star_5 ratings_stars" data-rate="5">
+                        </div>
+
+                        <span class="rate-np" id="average-rate">
+                            {{ average_rate|default:"0" }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="comment-area" style="margin-top: 35px;">
+
+                    <h4>
+                        Leave a Comment
+                    </h4>
+
+                    <form id="comment-form">
+
+                        {% csrf_token %}
+
+                        <div class="form-group">
+
+                            <textarea id="comment-input" name="comment" class="form-control" rows="4"
+                                placeholder="Write your comment..."></textarea>
+
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Comment
+                        </button>
+
+                    </form>
 
 
-                    <div class="single-blog-post">
-
-                        
-                        <h3>
-                            {{ blog.title }}
-                        </h3>
+                    <hr>
 
 
-                        
-                        <div class="post-meta">
+                    <h4>
+                        Comments
+                    </h4>
 
-                            <ul>
 
-                                <li>
+                    <div id="comment-list">
+
+                        {% for item in comments %}
+
+                        <div class="blog-comment" id="comment-{{ item.id }}" style="
+                padding: 15px 0;
+                border-bottom: 1px solid #ddd;
+            ">
+
+                            <strong>
+
+                                <i class="fa fa-user"></i>
+
+                                {{ item.user.username }}
+
+                            </strong>
+
+                            <span style="
+                    color: #999;
+                    margin-left: 10px;
+                    font-size: 12px;
+                ">
+
+                                {{ item.time|date:"d/m/Y H:i" }}
+
+                            </span>
+
+
+                            <p style="margin-top: 10px;">
+
+                                {{ item.comment }}
+
+                            </p>
+
+
+                            {% for reply in item.replies.all %}
+
+                            <div style="
+                    margin-left: 40px;
+                    margin-top: 15px;
+                    padding-left: 15px;
+                    border-left: 2px solid #ddd;
+                ">
+
+                                <strong>
+
                                     <i class="fa fa-user"></i>
-                                    {{ blog.author.username }}
-                                </li>
 
-                                <li>
-                                    <i class="fa fa-clock-o"></i>
-                                    {{ blog.created_at|date:"h:i A" }}
-                                </li>
+                                    {{ reply.user.username }}
 
-                                <li>
-                                    <i class="fa fa-calendar"></i>
-                                    {{ blog.created_at|date:"d M Y" }}
-                                </li>
+                                </strong>
 
-                            </ul>
+                                <span style="
+                        color: #999;
+                        margin-left: 10px;
+                        font-size: 12px;
+                    ">
+
+                                    {{ reply.time|date:"d/m/Y H:i" }}
+
+                                </span>
+
+                                <p style="margin-top: 8px;">
+
+                                    {{ reply.comment }}
+
+                                </p>
+
+                            </div>
+
+                            {% endfor %}
 
                         </div>
 
 
-                        
-                        {% if blog.image %}
+                        {% empty %}
 
-                            <img
-                                src="{{ blog.image.url }}"
-                                alt="{{ blog.title }}"
-                                style="
-                                    width: 100%;
-                                    height: auto;
-                                    margin-bottom: 25px;
-                                "
-                            >
+                        <p id="no-comment-message">
+                            No comments yet.
+                        </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <div class="pager-area">
+
+                    <ul class="pager">
+
+                        {% if previous_blog %}
+
+                        <li class="previous">
+
+                            <a href="{% url 'blog:blog_detail' previous_blog.id %}">
+
+                                <i class="fa fa-angle-left"></i>
+
+                                Prev
+
+                            </a>
+
+                        </li>
 
                         {% endif %}
 
+                        {% if next_blog %}
 
-                        
-                        <div class="blog-content">
+                        <li class="next">
 
-                            {{ blog.content|safe }}
+                            <a href="{% url 'blog:blog_detail' next_blog.id %}">
 
-                        </div>
+                                Next
 
+                                <i class="fa fa-angle-right"></i>
 
-                        
-                        <div class="pager-area">
-
-                            <ul class="pager">
-
-                                
-                                {% if previous_blog %}
-
-                                    <li class="previous">
-
-                                        <a href="{% url 'blog:blog_detail' previous_blog.id %}">
-
-                                            <i class="fa fa-angle-left"></i>
-
-                                            Prev
-
-                                        </a>
-
-                                    </li>
-
-                                {% endif %}
-
-
-                                
-                                {% if next_blog %}
-
-                                    <li class="next">
-
-                                        <a href="{% url 'blog:blog_detail' next_blog.id %}">
-
-                                            Next
-
-                                            <i class="fa fa-angle-right"></i>
-
-                                        </a>
-
-                                    </li>
-
-                                {% endif %}
-
-                            </ul>
-
-                        </div>
-
-
-                        
-                        <div style="margin-top: 20px;">
-
-                            <a
-                                href="{% url 'blog:blog_list' %}"
-                                class="btn btn-default"
-                            >
-                                <i class="fa fa-arrow-left"></i>
-                                Back to Blog
                             </a>
 
-                        </div>
+                        </li>
 
-                    </div>
+                        {% endif %}
+
+                    </ul>
+
+                </div>
+
+                <div style="margin-top: 20px;">
+
+                    <a href="{% url 'blog:blog_list' %}" class="btn btn-default">
+
+                        <i class="fa fa-arrow-left"></i>
+
+                        Back to Blog
+
+                    </a>
 
                 </div>
 
@@ -151,6 +275,268 @@
         </div>
 
     </div>
-</section>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const stars = document.querySelectorAll(".ratings_stars");
+        const averageRate = document.getElementById("average-rate");
+
+        const isAuthenticated = "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
+
+        stars.forEach(function (star) {
+
+            star.addEventListener("mouseenter", function () {
+
+                const rate = parseInt(this.dataset.rate);
+
+                stars.forEach(function (item) {
+
+                    const itemRate = parseInt(item.dataset.rate);
+
+                    if (itemRate <= rate) {
+                        item.classList.add("ratings_hover");
+                    } else {
+                        item.classList.remove("ratings_hover");
+                    }
+
+                });
+
+            });
+
+
+            star.addEventListener("mouseleave", function () {
+
+                stars.forEach(function (item) {
+                    item.classList.remove("ratings_hover");
+                });
+
+            });
+
+
+            star.addEventListener("click", function () {
+
+                if (!isAuthenticated) {
+                    alert("Please login to rate this blog.");
+                    return;
+                }
+
+                const rate = parseInt(this.dataset.rate);
+
+                fetch("{% url 'blog:rate_blog' blog.id %}", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+
+                    body: new URLSearchParams({
+                        "rate": rate
+                    })
+
+                })
+
+                    .then(function (response) {
+                        return response.json();
+                    })
+
+                    .then(function (data) {
+
+                        if (data.success) {
+
+                            const avg = parseFloat(data.average_rate);
+
+                            averageRate.innerText = avg.toFixed(1);
+
+                            stars.forEach(function (item) {
+
+                                const itemRate = parseInt(item.dataset.rate);
+
+                                item.classList.remove("ratings_hover");
+
+                                if (itemRate <= data.rate) {
+                                    item.classList.add("ratings_over");
+                                } else {
+                                    item.classList.remove("ratings_over");
+                                }
+
+                            });
+
+                        } else {
+
+                            alert(data.error);
+
+                        }
+
+                    })
+
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+            });
+
+        });
+
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const commentForm = document.getElementById("comment-form");
+
+        const commentInput = document.getElementById("comment-input");
+
+        const commentList = document.getElementById("comment-list");
+
+        const isAuthenticated =
+            "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
+
+
+        commentForm.addEventListener("submit", function (event) {
+
+            event.preventDefault();
+
+
+            if (!isAuthenticated) {
+
+                alert("Please login to comment.");
+
+                return;
+            }
+
+
+            const comment = commentInput.value.trim();
+
+
+            if (comment === "") {
+
+                alert("Please enter your comment.");
+
+                return;
+            }
+
+
+            fetch("{% url 'blog:comment_blog' blog.id %}", {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/x-www-form-urlencoded",
+
+                    "X-CSRFToken": "{{ csrf_token }}"
+
+                },
+
+                body: new URLSearchParams({
+
+                    "comment": comment
+
+                })
+
+            })
+
+                .then(function (response) {
+
+                    return response.json();
+
+                })
+
+                .then(function (data) {
+
+                    if (data.success) {
+
+                        const noCommentMessage =
+                            document.getElementById("no-comment-message");
+
+
+                        if (noCommentMessage) {
+
+                            noCommentMessage.remove();
+
+                        }
+
+
+                        const commentHTML = `
+
+                    <div
+                        class="blog-comment"
+                        id="comment-${data.data.id}"
+                        style="
+                            padding: 15px 0;
+                            border-bottom: 1px solid #ddd;
+                        "
+                    >
+
+                        <strong>
+
+                            <i class="fa fa-user"></i>
+
+                            ${data.data.username}
+
+                        </strong>
+
+
+                        <span
+                            style="
+                                color: #999;
+                                margin-left: 10px;
+                                font-size: 12px;
+                            "
+                        >
+
+                            ${data.data.time}
+
+                        </span>
+
+
+                        <p style="margin-top: 10px;">
+
+                            ${data.data.comment}
+
+                        </p>
+
+                    </div>
+
+                `;
+
+
+                        commentList.insertAdjacentHTML(
+                            "afterbegin",
+                            commentHTML
+                        );
+
+
+                        commentInput.value = "";
+
+
+                    } else {
+
+                        alert(data.error);
+
+                    }
+
+                })
+
+                .catch(function (error) {
+
+                    console.log(error);
+
+                    alert("Something went wrong.");
+
+                });
+
+        });
+
+    });
+
+</script>
 
 {% endblock %}

@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add Product
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-sm-3">
+
+        {% include 'users/account/menu-account.html' %}
+
+    </div>
+
+
+    <div class="col-sm-9">
+
+        <div class="signup-form">
+
+            <h2>
+                Create product!
+            </h2>
+
+
+            {% if error %}
+
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                {% csrf_token %}
+
+
+                <div class="form-group">
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        placeholder="Name"
+                        value="{{ request.POST.name }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <input
+                        type="number"
+                        name="price"
+                        class="form-control"
+                        placeholder="Price"
+                        step="0.01"
+                        min="0"
+                        value="{{ request.POST.price }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <select
+                        name="category"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            Please choose category
+                        </option>
+
+                        {% for category in categories %}
+
+                        <option value="{{ category.id }}">
+                            {{ category.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <select
+                        name="brand"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            Please choose brand
+                        </option>
+
+                        {% for brand in brands %}
+
+                        <option value="{{ brand.id }}">
+                            {{ brand.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <select
+                        name="status"
+                        id="status"
+                        class="form-control"
+                    >
+
+                        <option value="0">
+                            New
+                        </option>
+
+                        <option value="1">
+                            Sale
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div
+                    class="form-group"
+                    id="sale-box"
+                    style="display: none;"
+                >
+
+                    <input
+                        type="number"
+                        name="sale"
+                        class="form-control"
+                        placeholder="Sale"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <input
+                        type="text"
+                        name="company"
+                        class="form-control"
+                        placeholder="Company profile"
+                        value="{{ request.POST.company }}"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <input
+                        type="file"
+                        name="images"
+                        id="images"
+                        class="form-control"
+                        accept="image/*"
+                        multiple
+                    >
+
+                    <small>
+                        Upload tối đa 3 hình, mỗi hình nhỏ hơn 1MB.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <textarea
+                        name="detail"
+                        class="form-control"
+                        rows="6"
+                        placeholder="Detail"
+                    >{{ request.POST.detail }}</textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-default"
+                >
+                    Add Product
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const status = document.getElementById("status");
+    const saleBox = document.getElementById("sale-box");
+    const images = document.getElementById("images");
+
+
+    function checkSale() {
+
+        if (status.value === "1") {
+
+            saleBox.style.display = "block";
+
+        } else {
+
+            saleBox.style.display = "none";
+
+            const saleInput = saleBox.querySelector(
+                'input[name="sale"]'
+            );
+
+            saleInput.value = 0;
+
+        }
+
+    }
+
+
+    status.addEventListener(
+        "change",
+        checkSale
+    );
+
+
+    images.addEventListener(
+        "change",
+        function () {
+
+            if (this.files.length > 3) {
+
+                alert(
+                    "Chỉ được chọn tối đa 3 hình."
+                );
+
+                this.value = "";
+
+                return;
+
+            }
+
+
+            for (let i = 0; i < this.files.length; i++) {
+
+                const file = this.files[i];
+
+
+                if (!file.type.startsWith("image/")) {
+
+                    alert(
+                        "File upload phải là hình ảnh."
+                    );
+
+                    this.value = "";
+
+                    return;
+
+                }
+
+
+                if (file.size > 1024 * 1024) {
+
+                    alert(
+                        file.name +
+                        " có dung lượng lớn hơn 1MB."
+                    );
+
+                    this.value = "";
+
+                    return;
+
+                }
+
+            }
+
+        }
+    );
+
+
+    checkSale();
+
+});
+
+</script>
+
+{% endblock %}

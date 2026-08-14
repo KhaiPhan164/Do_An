@@ -20,4 +20,16 @@ urlpatterns = [
         name='blog_detail'
     ),
 
+    path(
+        '<int:blog_id>/rate/',
+        views.rate_blog,
+        name='rate_blog'
+    ),
+
+    path(
+            '<int:blog_id>/comment/',
+            views.comment_blog,
+            name='comment_blog'
+        ),
+
 ]
