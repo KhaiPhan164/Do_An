@@ -2,13 +2,16 @@
 
 <header id="header">
 
-
     <div class="header_top">
+
         <div class="container">
+
             <div class="row">
 
                 <div class="col-sm-6">
+
                     <div class="contactinfo">
+
                         <ul class="nav nav-pills">
 
                             <li>
@@ -26,11 +29,16 @@
                             </li>
 
                         </ul>
+
                     </div>
+
                 </div>
 
+
                 <div class="col-sm-6">
+
                     <div class="social-icons pull-right">
+
                         <ul class="nav navbar-nav">
 
                             <li>
@@ -64,54 +72,94 @@
                             </li>
 
                         </ul>
+
                     </div>
+
                 </div>
 
             </div>
+
         </div>
+
     </div>
 
 
-
-
     <div class="header-middle">
+
         <div class="container">
+
             <div class="row">
+
 
                 <div class="col-md-4 clearfix">
 
                     <div class="logo pull-left">
-                        <a href="/">
-                            <img src="{% static 'images/home/logo.png' %}" alt="E-Shopper">
+
+                        <a href="{% url 'users:home' %}">
+
+                            <img
+                                src="{% static 'images/home/logo.png' %}"
+                                alt="E-Shopper"
+                            >
+
                         </a>
+
                     </div>
+
 
                     <div class="btn-group pull-right clearfix">
 
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
+
+                            <button
+                                type="button"
+                                class="btn btn-default dropdown-toggle usa"
+                                data-toggle="dropdown"
+                            >
+
                                 USA
+
                                 <span class="caret"></span>
+
                             </button>
 
+
                             <ul class="dropdown-menu">
+
                                 <li>
-                                    <a href="#">Canada</a>
+                                    <a href="#">
+                                        Canada
+                                    </a>
                                 </li>
 
                                 <li>
-                                    <a href="#">UK</a>
+                                    <a href="#">
+                                        UK
+                                    </a>
                                 </li>
+
                             </ul>
+
                         </div>
 
+
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
+
+                            <button
+                                type="button"
+                                class="btn btn-default dropdown-toggle usa"
+                                data-toggle="dropdown"
+                            >
+
                                 DOLLAR
+
                                 <span class="caret"></span>
+
                             </button>
 
+
                             <ul class="dropdown-menu">
+
                                 <li>
                                     <a href="#">
                                         Canadian Dollar
@@ -123,208 +171,381 @@
                                         Pound
                                     </a>
                                 </li>
+
                             </ul>
+
                         </div>
 
                     </div>
+
                 </div>
+
+
 
                 <div class="col-md-8 clearfix">
 
                     <div class="shop-menu clearfix pull-right">
+
                         <ul class="nav navbar-nav">
+
+
                             {% if request.user.is_authenticated %}
+
                             <li>
-                                <a href="/account/">
+
+                                <a href="/users/account/update/">
+
                                     <i class="fa fa-user"></i>
+
                                     Account
+
                                 </a>
+
                             </li>
 
+
                             <li>
+
                                 <a href="#">
+
                                     <i class="fa fa-star"></i>
+
                                     Wishlist
+
                                 </a>
-                            </li>
 
-                            <li>
-                                <a href="/checkout/">
-                                    <i class="fa fa-crosshairs"></i>
-                                    Checkout
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="/cart/">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    Cart
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="#">
-                                    <i class="fa fa-user"></i>
-
-                                    Xin chào:
-                                    {{ request.user.username }}
-                                    | id: {{ request.user.id }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{% url 'users:logout' %}">
-                                    <i class="fa fa-sign-out"></i>
-                                    Logout
-                                </a>
-                            </li>
-
-                            {% else %}
-
-                            <li>
-                                <a href="{% url 'users:register' %}">
-                                    <i class="fa fa-user"></i>
-                                    Đăng ký
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{% url 'users:login' %}">
-                                    <i class="fa fa-lock"></i>
-                                    Đăng nhập
-                                </a>
                             </li>
 
                             {% endif %}
 
+
+
+                            <li>
+
+                                <a href="{% url 'users:checkout' %}">
+
+                                    <i class="fa fa-crosshairs"></i>
+
+                                    Checkout
+
+                                </a>
+
+                            </li>
+
+
+
+                            <li>
+
+                                <a href="{% url 'users:cart' %}">
+
+                                    <i class="fa fa-shopping-cart"></i>
+
+                                    Cart
+
+                                    <span
+                                        id="cart-count"
+                                        class="badge"
+                                    >
+                                        {{ cart_count|default:0 }}
+                                    </span>
+
+                                </a>
+
+                            </li>
+
+
+
+                            {% if request.user.is_authenticated %}
+
+                            <li>
+
+                                <a href="#">
+
+                                    <i class="fa fa-user"></i>
+
+                                    Xin chào:
+                                    {{ request.user.username }}
+
+                                    | id:
+                                    {{ request.user.id }}
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a href="{% url 'users:logout' %}">
+
+                                    <i class="fa fa-sign-out"></i>
+
+                                    Logout
+
+                                </a>
+
+                            </li>
+
+
+                            {% else %}
+
+
+                            <li>
+
+                                <a href="{% url 'users:register' %}">
+
+                                    <i class="fa fa-user"></i>
+
+                                    Đăng ký
+
+                                </a>
+
+                            </li>
+
+
+                            <li>
+
+                                <a href="{% url 'users:login' %}">
+
+                                    <i class="fa fa-lock"></i>
+
+                                    Đăng nhập
+
+                                </a>
+
+                            </li>
+
+
+                            {% endif %}
+
+
                         </ul>
+
                     </div>
 
                 </div>
 
+
             </div>
+
         </div>
+
     </div>
 
 
-
-
     <div class="header-bottom">
+
         <div class="container">
+
             <div class="row">
+
 
                 <div class="col-sm-9">
 
+
                     <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                            data-target=".navbar-collapse">
+
+                        <button
+                            type="button"
+                            class="navbar-toggle"
+                            data-toggle="collapse"
+                            data-target=".navbar-collapse"
+                        >
+
                             <span class="sr-only">
                                 Toggle navigation
                             </span>
 
                             <span class="icon-bar"></span>
+
                             <span class="icon-bar"></span>
+
                             <span class="icon-bar"></span>
+
                         </button>
+
                     </div>
+
+
 
                     <div class="mainmenu pull-left">
+
                         <ul class="nav navbar-nav collapse navbar-collapse">
 
+
                             <li>
-                                <a href="/">
+
+                                <a href="{% url 'users:home' %}">
+
                                     Home
+
                                 </a>
+
                             </li>
 
+
+
                             <li class="dropdown">
+
                                 <a href="#">
+
                                     Shop
+
                                     <i class="fa fa-angle-down"></i>
+
                                 </a>
 
-                                <ul role="menu" class="sub-menu">
+
+                                <ul
+                                    role="menu"
+                                    class="sub-menu"
+                                >
+
+
                                     <li>
+
                                         <a href="/shop/">
+
                                             Products
+
                                         </a>
+
                                     </li>
 
-                                    <li>
-                                        <a href="/product-details/">
-                                            Product Details
-                                        </a>
-                                    </li>
 
                                     <li>
-                                        <a href="/checkout/">
-                                            Checkout
-                                        </a>
-                                    </li>
 
-                                    <li>
-                                        <a href="/cart/">
+                                        <a href="{% url 'users:cart' %}">
+
                                             Cart
+
                                         </a>
+
                                     </li>
 
+
                                     <li>
-                                        <a href="/login/">
-                                            Login
+
+                                        <a href="{% url 'users:checkout' %}">
+
+                                            Checkout
+
                                         </a>
+
                                     </li>
+
+
+                                    {% if request.user.is_authenticated %}
+
+                                    <li>
+
+                                        <a href="/users/account/update/">
+
+                                            Account
+
+                                        </a>
+
+                                    </li>
+
+                                    {% else %}
+
+                                    <li>
+
+                                        <a href="{% url 'users:login' %}">
+
+                                            Login
+
+                                        </a>
+
+                                    </li>
+
+                                    {% endif %}
+
+
                                 </ul>
+
                             </li>
+
+
 
                             <li class="dropdown">
+
                                 <a href="#">
+
                                     Blog
+
                                     <i class="fa fa-angle-down"></i>
+
                                 </a>
 
-                                <ul role="menu" class="sub-menu">
+
+                                <ul
+                                    role="menu"
+                                    class="sub-menu"
+                                >
+
                                     <li>
+
                                         <a href="/blog/">
+
                                             Blog List
+
                                         </a>
+
                                     </li>
 
-                                    <li>
-                                        <a href="/blog/detail/">
-                                            Blog Detail
-                                        </a>
-                                    </li>
                                 </ul>
+
                             </li>
 
-                            <li>
-                                <a href="/404/">
-                                    404
-                                </a>
-                            </li>
+
 
                             <li>
+
                                 <a href="/contact/">
+
                                     Contact
+
                                 </a>
+
                             </li>
+
 
                         </ul>
+
                     </div>
+
+
                 </div>
 
+
+
                 <div class="col-sm-3">
+
                     <div class="search_box pull-right">
 
-                        <form method="GET" action="/shop/">
-                            <input type="text" name="keyword" placeholder="Search">
+                        <form
+                            method="GET"
+                            action="/shop/"
+                        >
+
+                            <input
+                                type="text"
+                                name="keyword"
+                                placeholder="Search"
+                            >
+
                         </form>
 
                     </div>
+
                 </div>
 
+
             </div>
+
         </div>
+
     </div>
 
 

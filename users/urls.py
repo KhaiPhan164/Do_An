@@ -36,5 +36,41 @@ urlpatterns = [
     views.delete_product,
     name='delete_product'
     ),
+     path('', views.home, name='home'),
+
+    path(
+        'product/<int:id>/',
+        views.product_detail,
+        name='product_detail'
+    ),
+      path(
+        'cart/',
+        views.cart_view,
+        name='cart'
+    ),
+
+    path(
+        'cart/add/',
+        views.add_to_cart,
+        name='add_to_cart'
+    ),
+
+    path(
+        'cart/update/',
+        views.update_cart,
+        name='update_cart'
+    ),
+
+    path(
+        'cart/delete/',
+        views.delete_cart_item,
+        name='delete_cart_item'
+    ),
+
+    path(
+        'checkout/',
+        views.checkout,
+        name='checkout'
+    ),
 
 ]

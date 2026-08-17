@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Country, Product, Category, Brand
+from .models import User, Country, Product, Category, Brand, History
 # Register your models here.
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -27,3 +27,31 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
+
+@admin.register(History)
+class HistoryAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'id',
+        'name',
+        'email',
+        'phone',
+        'user',
+        'price',
+        'created_at',
+    )
+
+    search_fields = (
+        'name',
+        'email',
+        'phone',
+        'user__username',
+    )
+
+    list_filter = (
+        'created_at',
+    )
+
+    ordering = (
+        '-created_at',
+    )
