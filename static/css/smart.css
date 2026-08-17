@@ -20,7 +20,7 @@
     width:auto;
     position:relative;
 }   
-/*header sp*/
+
 .header-sp{
     border-top: 2px solid #f06292;
     text-align: center;
@@ -80,7 +80,7 @@ a.logo-sp img{
     width: 100%;
     height: auto;
 }
-/* end header sp*/
+
 .content{
     background: #fff;
     display: block;
@@ -89,7 +89,7 @@ a.logo-sp img{
     padding-top: 0;
     padding-bottom: 0;
     margin-bottom: 30px;
-   /* padding: 10px 1.5% 0 1.5%;*/
+   
 }
 .aside {
     float: none;
@@ -402,7 +402,7 @@ ul.qualifications-300 li.qualifications-li-1 {
     width: 97%;
 }
 
-/*300*/
+
 .aside-slider-list-300,
 .aside-slider-list-500 {
     background: #fff;
@@ -600,7 +600,7 @@ border-radius: 1px;
     width: 100%;
     padding: 0 0 5px 0;
     margin-bottom: 8px;
-   /* background: url(../images/sp/index/clock-noactive.png) no-repeat right center;*/
+   
     -webkit-border-radius: 1px;
     -moz-border-radius: 1px;
     border-radius: 1px;
@@ -608,7 +608,7 @@ border-radius: 1px;
     background-size: 30px;
 }
 .aside-slider-list-500 ul li:hover{
-    /*background: url(../images/sp/index/clock-active.png) no-repeat right center;*/
+    
    background-size: 30px;
 }
  .list-2-list-500{
@@ -663,7 +663,7 @@ border-radius: 1px;
     color: #555555;
 }
 .banner-510 {
-    /*background: url(../images/510/banner.png) no-repeat right center;*/
+    
     width: 100% !important;
 }
 .list-feature-520 ul li{
@@ -838,7 +838,7 @@ border-radius: 1px;
 
 
 
-/*-----chuong SP 400-----------*/
+
 .ch-100-left{
     width: 24%;
 }
@@ -996,7 +996,7 @@ h4{
 .ch-430-bottom{
     min-height: auto;
 }
-/*L1*/
+
 .h4-l1{
     margin-bottom: 0;
 }
@@ -1189,7 +1189,7 @@ a.amazon {
 .list-selectbox-145 ul.qualifications li{
     width: 46%;
 }
-/*end L1*/
+
  .ch-100-nav li{
     max-width: 139.6px;
     width: 20%;
@@ -1312,7 +1312,7 @@ a.submit-agree{
     -moz-border-radius: 5px;
     border-radius: 5px;
 }
-/* chuong 20-10-2015*/
+
 .link-l-232,.link-r-232{
     display: block;
     margin: 0 auto 5px auto;
@@ -1430,7 +1430,7 @@ a.submit-agree{
 .l210-15-co-sp{
     margin-top: 15px;
 }
-/* end chuong 20-10-2015*/
+
 .like-heart ul li {
     position: relative;
     width: 20%;
@@ -1455,7 +1455,7 @@ a.submit-agree{
 .aside-slider-list-300 ul.ul-300 li.li311n{
     margin-bottom: 13px;
 }
-/* chuong */
+
 .title_np{
     font-size: 11px;
 }
@@ -1865,8 +1865,8 @@ ul.qualifications-ser-n li:last-child{
 .div-f11{
     margin-right: 4px;
 }
-/* end chuong */
-/*26012016*/
+
+
 a.newU200regiter{
     margin-top: 10px;
 }
@@ -1910,7 +1910,7 @@ ul.listNew212sp li.li-full-sp{
 .select-1,.select-2,.select-3{
     width: 32%;
 }
-/*29012016*/
+
 .list-button-new .hea-1{
     top:29px !important;
 }
@@ -1994,7 +1994,7 @@ ul.listNew212sp li.li-full-sp{
         width: 173px;
         overflow: hidden;
         text-overflow: ellipsis;
-        /* white-space: nowrap; */
+        
         max-height: 70px
     }
     .step-p1 {
@@ -2132,7 +2132,7 @@ ul.listNew212sp li.li-full-sp{
     .list-button .hea-300{
     top:40px;
     }
-    /* chuong */
+    
     .p9-np{
         margin-top: 77px;
     }
