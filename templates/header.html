@@ -97,10 +97,7 @@
 
                         <a href="{% url 'users:home' %}">
 
-                            <img
-                                src="{% static 'images/home/logo.png' %}"
-                                alt="E-Shopper"
-                            >
+                            <img src="{% static 'images/home/logo.png' %}" alt="E-Shopper">
 
                         </a>
 
@@ -111,11 +108,7 @@
 
                         <div class="btn-group">
 
-                            <button
-                                type="button"
-                                class="btn btn-default dropdown-toggle usa"
-                                data-toggle="dropdown"
-                            >
+                            <button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
 
                                 USA
 
@@ -145,11 +138,7 @@
 
                         <div class="btn-group">
 
-                            <button
-                                type="button"
-                                class="btn btn-default dropdown-toggle usa"
-                                data-toggle="dropdown"
-                            >
+                            <button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
 
                                 DOLLAR
 
@@ -242,10 +231,7 @@
 
                                     Cart
 
-                                    <span
-                                        id="cart-count"
-                                        class="badge"
-                                    >
+                                    <span id="cart-count" class="badge">
                                         {{ cart_count|default:0 }}
                                     </span>
 
@@ -345,12 +331,8 @@
 
                     <div class="navbar-header">
 
-                        <button
-                            type="button"
-                            class="navbar-toggle"
-                            data-toggle="collapse"
-                            data-target=".navbar-collapse"
-                        >
+                        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target=".navbar-collapse">
 
                             <span class="sr-only">
                                 Toggle navigation
@@ -396,15 +378,12 @@
                                 </a>
 
 
-                                <ul
-                                    role="menu"
-                                    class="sub-menu"
-                                >
+                                <ul role="menu" class="sub-menu">
 
 
                                     <li>
 
-                                        <a href="/shop/">
+                                        <a href="{% url 'users:home' %}">
 
                                             Products
 
@@ -479,10 +458,7 @@
                                 </a>
 
 
-                                <ul
-                                    role="menu"
-                                    class="sub-menu"
-                                >
+                                <ul role="menu" class="sub-menu">
 
                                     <li>
 
@@ -510,6 +486,16 @@
 
                             </li>
 
+                            <li>
+
+                                <a href="{% url 'users:search_advanced' %}">
+
+                                    Search advanced
+
+                                </a>
+
+                            </li>
+
 
                         </ul>
 
@@ -524,16 +510,9 @@
 
                     <div class="search_box pull-right">
 
-                        <form
-                            method="GET"
-                            action="/shop/"
-                        >
+                        <form action="{% url 'users:search_product' %}" method="GET">
 
-                            <input
-                                type="text"
-                                name="keyword"
-                                placeholder="Search"
-                            >
+                            <input type="text" name="keyword" placeholder="Search" value="{{ request.GET.keyword }}">
 
                         </form>
 

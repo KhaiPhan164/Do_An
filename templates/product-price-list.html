@@ -1,0 +1,138 @@
+{% load static %}
+
+
+{% for product in products %}
+
+<div class="col-sm-4">
+
+    <div class="product-image-wrapper">
+
+        <div class="single-products">
+
+            <div class="productinfo text-center">
+
+
+                <a href="{% url 'users:product_detail' product.id %}">
+
+                    {% if product.image_list %}
+
+                        <img
+                            src="{{ product.image_list.0 }}"
+                            alt="{{ product.name }}"
+                            style="
+                                width: 100%;
+                                height: 250px;
+                                object-fit: contain;
+                            "
+                        >
+
+                    {% else %}
+
+                        <img
+                            src="{% static 'images/home/product1.jpg' %}"
+                            alt="{{ product.name }}"
+                            style="
+                                width: 100%;
+                                height: 250px;
+                                object-fit: contain;
+                            "
+                        >
+
+                    {% endif %}
+
+                </a>
+
+
+                {% if product.status == 1 and product.sale > 0 %}
+
+                    <h2>
+                        ${{ product.sale }}
+                    </h2>
+
+                    <p>
+                        <del>
+                            ${{ product.price }}
+                        </del>
+                    </p>
+
+                {% else %}
+
+                    <h2>
+                        ${{ product.price }}
+                    </h2>
+
+                {% endif %}
+
+
+                <p>
+                    {{ product.name }}
+                </p>
+
+
+                <a
+                    href="{% url 'users:product_detail' product.id %}"
+                    class="btn btn-default add-to-cart"
+                >
+
+                    <i class="fa fa-eye"></i>
+
+                    View Product
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+        <div class="choose">
+
+            <ul class="nav nav-pills nav-justified">
+
+                <li>
+
+                    <a href="#">
+
+                        <i class="fa fa-plus-square"></i>
+
+                        Add to wishlist
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#">
+
+                        <i class="fa fa-plus-square"></i>
+
+                        Add to compare
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% empty %}
+
+<div class="col-sm-12">
+
+    <div class="alert alert-warning">
+
+        Không có sản phẩm nào trong khoảng giá này.
+
+    </div>
+
+</div>
+
+{% endfor %}

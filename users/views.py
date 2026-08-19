@@ -6,10 +6,13 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.db import transaction
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.db.models import Min, Max, When, Case, F, DecimalField
+from .decorators import non_superuser_required
+
 
 import json
 import os
@@ -187,7 +190,7 @@ def login_view(request):
             )
 
             return redirect(
-                'blog:blog_list'
+                '/users/'
             )
 
     else:
@@ -213,7 +216,7 @@ def logout_view(request):
     )
 
 
-@login_required
+@non_superuser_required
 def account_update(request):
 
     user = request.user
@@ -278,7 +281,7 @@ def account_update(request):
     )
 
 
-@login_required
+@non_superuser_required
 def my_product(request):
 
     products = Product.objects.filter(
@@ -364,7 +367,7 @@ def my_product(request):
     )
 
 
-@login_required
+@non_superuser_required
 def add_product(request):
 
     categories = Category.objects.all()
@@ -538,7 +541,7 @@ def add_product(request):
     )
 
 
-@login_required
+@non_superuser_required
 def edit_product(
     request,
     product_id
@@ -818,7 +821,7 @@ def edit_product(
     )
 
 
-@login_required
+@non_superuser_required
 def delete_product(
     request,
     product_id
@@ -878,32 +881,32 @@ def home(request):
         )[:6]
     )
 
-
     for product in products:
-
-        product.image_list = (
-            get_product_images(
-                product
-            )
-        )
+        product.image_list = get_product_images(product)
 
 
-    cart = get_cart(
-        request
+    price_data = Product.objects.aggregate(
+        min_price=Min('price'),
+        max_price=Max('price')
     )
+
+    min_price = Decimal('0')
+    max_price = price_data['max_price'] or Decimal('1000')
+
+
+    cart = get_cart(request)
 
 
     return render(
         request,
         'home.html',
         {
-            'products':
-                products,
+            'products': products,
 
-            'cart_count':
-                get_cart_count(
-                    cart
-                ),
+            'min_price': min_price,
+            'max_price': max_price,
+
+            'cart_count': get_cart_count(cart),
         }
     )
 
@@ -1696,11 +1699,6 @@ def checkout(request):
         user = request.user
 
 
-        # ==========================
-        # USER CHƯA LOGIN
-        # ĐĂNG KÝ NHANH
-        # ==========================
-
         if not request.user.is_authenticated:
 
             username = request.POST.get(
@@ -1882,10 +1880,6 @@ def checkout(request):
             )
 
 
-        # ==========================
-        # USER ĐÃ LOGIN
-        # ==========================
-
         else:
 
             user = request.user
@@ -1905,9 +1899,6 @@ def checkout(request):
                 )
 
 
-        # ==========================
-        # SAVE HISTORY + SEND EMAIL
-        # ==========================
 
         try:
 
@@ -2005,9 +1996,6 @@ def checkout(request):
             )
 
 
-        # ==========================
-        # CLEAR CART
-        # ==========================
 
         request.session[
             'cart'
@@ -2042,3 +2030,276 @@ def checkout(request):
                 get_cart_count(cart),
         }
     )
+
+def search_product(request):
+    keyword = request.GET.get('keyword', '').strip()
+    products = Product.objects.none()
+    if keyword:
+        products = Product.objects.filter(name__icontains=keyword)
+    context = {
+        'products' : products,
+        'keyword' : keyword,
+    }
+    return render(request, 'search.html', context)
+
+def search_advanced(request):
+
+    products = (
+        Product.objects
+        .select_related(
+            'category',
+            'brand',
+            'user'
+        )
+        .order_by('-id')
+    )
+
+
+    categories = Category.objects.all()
+
+    brands = Brand.objects.all()
+
+
+    name = request.GET.get(
+        'name',
+        ''
+    ).strip()
+
+
+    price_range = request.GET.get(
+        'price',
+        ''
+    )
+
+
+    category_id = request.GET.get(
+        'category',
+        ''
+    )
+
+
+    brand_id = request.GET.get(
+        'brand',
+        ''
+    )
+
+
+    status = request.GET.get(
+        'status',
+        ''
+    )
+
+
+    if name:
+
+        products = products.filter(
+            name__icontains=name
+        )
+
+
+    if price_range:
+
+        try:
+
+            min_price, max_price = (
+                price_range.split('-')
+            )
+
+            products = products.filter(
+                price__range=(
+                    Decimal(min_price),
+                    Decimal(max_price)
+                )
+            )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            pass
+
+
+    if category_id:
+
+        products = products.filter(
+            category_id=category_id
+        )
+
+
+    if brand_id:
+
+        products = products.filter(
+            brand_id=brand_id
+        )
+
+
+    if status != '':
+
+        products = products.filter(
+            status=status
+        )
+
+
+    paginator = Paginator(
+        products,
+        6
+    )
+
+
+    page_number = request.GET.get(
+        'page'
+    )
+
+
+    page_obj = paginator.get_page(
+        page_number
+    )
+
+
+    for product in page_obj:
+
+        product.image_list = (
+            get_product_images(
+                product
+            )
+        )
+
+
+    params = request.GET.copy()
+
+    if 'page' in params:
+
+        params.pop('page')
+
+
+    query_string = params.urlencode()
+
+
+    cart = get_cart(
+        request
+    )
+
+
+    status_choices = (
+        Product
+        ._meta
+        .get_field('status')
+        .choices
+    )
+
+
+    return render(
+        request,
+        'search-advanced.html',
+        {
+            'page_obj':
+                page_obj,
+
+            'categories':
+                categories,
+
+            'brands':
+                brands,
+
+            'status_choices':
+                status_choices,
+
+            'name':
+                name,
+
+            'price_range':
+                price_range,
+
+            'category_id':
+                category_id,
+
+            'brand_id':
+                brand_id,
+
+            'status':
+                status,
+
+            'query_string':
+                query_string,
+
+            'cart_count':
+                get_cart_count(
+                    cart
+                ),
+        }
+    )
+
+def search_price(request):
+
+    products_query = Product.objects.annotate(
+        effective_price=Case(
+            When(
+                status=1,
+                sale__gt=0,
+                then=F('sale')
+            ),
+            default=F('price'),
+            output_field=DecimalField(
+                max_digits=10,
+                decimal_places=2
+            )
+        )
+    )
+
+
+    price_data = products_query.aggregate(
+        max_price=Max('effective_price')
+    )
+
+
+    default_min = 0
+
+    default_max = (
+        price_data['max_price']
+        or 1000
+    )
+
+
+    min_price = request.GET.get(
+        'min_price',
+        default_min
+    )
+
+    max_price = request.GET.get(
+        'max_price',
+        default_max
+    )
+
+
+    products = (
+        products_query
+        .filter(
+            effective_price__range=(
+                min_price,
+                max_price
+            )
+        )
+        .order_by('-created_at')
+    )
+
+
+    for product in products:
+
+        product.image_list = (
+            get_product_images(product)
+        )
+
+
+    html = render_to_string(
+        'product-price-list.html',
+        {
+            'products': products
+        },
+        request=request
+    )
+
+
+    return JsonResponse({
+        'html': html
+    })

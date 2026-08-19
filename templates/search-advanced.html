@@ -1,0 +1,574 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Search Advanced
+{% endblock %}
+
+
+{% block content %}
+
+
+<style>
+
+    .advanced-search-form {
+        margin-bottom: 25px;
+    }
+
+
+    .advanced-search-form .form-control {
+        height: 40px;
+        border-radius: 0;
+        border: 1px solid #ddd;
+        background: #f5f5f5;
+    }
+
+
+    .advanced-search-form .search-row {
+        display: flex;
+        gap: 5px;
+    }
+
+
+    .advanced-search-form .search-field {
+        flex: 1;
+    }
+
+
+    .advanced-search-button {
+        background: #fe980f;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        margin-top: 10px;
+    }
+
+
+    .advanced-search-button:hover {
+        background: #e8890d;
+        color: white;
+    }
+
+
+    .product-image-custom {
+        width: 100%;
+        height: 240px;
+        object-fit: contain;
+    }
+
+
+    .product-name-link {
+        color: #696763;
+    }
+
+
+    .product-name-link:hover {
+        color: #fe980f;
+    }
+
+
+    .pagination-wrapper {
+        clear: both;
+        text-align: center;
+        padding: 25px 0;
+    }
+
+
+    @media(max-width: 767px) {
+
+        .advanced-search-form .search-row {
+            display: block;
+        }
+
+
+        .advanced-search-form .search-field {
+            margin-bottom: 10px;
+        }
+
+    }
+
+</style>
+
+
+
+<div class="row">
+
+
+    <div class="col-sm-3">
+
+        {% include 'menuLeft.html' %}
+
+    </div>
+
+
+
+    <div class="col-sm-9 padding-right">
+
+
+        <div class="features_items">
+
+
+            <h2 class="title text-center">
+
+                Features Items
+
+            </h2>
+
+
+
+            <form
+                action="{% url 'users:search_advanced' %}"
+                method="GET"
+                class="advanced-search-form"
+            >
+
+
+                <div class="search-row">
+
+
+                    <div class="search-field">
+
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="Name"
+                            value="{{ name }}"
+                        >
+
+                    </div>
+
+
+
+                    <div class="search-field">
+
+                        <select
+                            name="price"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                Choose price
+                            </option>
+
+
+                            <option
+                                value="0-100"
+                                {% if price_range == '0-100' %}selected{% endif %}
+                            >
+                                $0 - $100
+                            </option>
+
+
+                            <option
+                                value="100-500"
+                                {% if price_range == '100-500' %}selected{% endif %}
+                            >
+                                $100 - $500
+                            </option>
+
+
+                            <option
+                                value="500-1000"
+                                {% if price_range == '500-1000' %}selected{% endif %}
+                            >
+                                $500 - $1000
+                            </option>
+
+
+                            <option
+                                value="1000-2000"
+                                {% if price_range == '1000-2000' %}selected{% endif %}
+                            >
+                                $1000 - $2000
+                            </option>
+
+
+                            <option
+                                value="2000-5000"
+                                {% if price_range == '2000-5000' %}selected{% endif %}
+                            >
+                                $2000 - $5000
+                            </option>
+
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="search-field">
+
+                        <select
+                            name="category"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                Category
+                            </option>
+
+
+                            {% for category in categories %}
+
+                                <option
+                                    value="{{ category.id }}"
+                                    {% if category_id == category.id|stringformat:"s" %}selected{% endif %}
+                                >
+
+                                    {{ category.name }}
+
+                                </option>
+
+                            {% endfor %}
+
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="search-field">
+
+                        <select
+                            name="brand"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                Brand
+                            </option>
+
+
+                            {% for brand in brands %}
+
+                                <option
+                                    value="{{ brand.id }}"
+                                    {% if brand_id == brand.id|stringformat:"s" %}selected{% endif %}
+                                >
+
+                                    {{ brand.name }}
+
+                                </option>
+
+                            {% endfor %}
+
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="search-field">
+
+                        <select
+                            name="status"
+                            class="form-control"
+                        >
+
+                            <option value="">
+                                Status
+                            </option>
+
+
+                            {% for value, label in status_choices %}
+
+                                <option
+                                    value="{{ value }}"
+                                    {% if status == value|stringformat:"s" %}selected{% endif %}
+                                >
+
+                                    {{ label }}
+
+                                </option>
+
+                            {% endfor %}
+
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="btn advanced-search-button"
+                >
+
+                    Search
+
+                </button>
+
+
+            </form>
+
+
+
+            {% if page_obj %}
+
+
+                {% for product in page_obj %}
+
+
+                    <div class="col-sm-4">
+
+
+                        <div class="product-image-wrapper">
+
+
+                            <div class="single-products">
+
+
+                                <div class="productinfo text-center">
+
+
+                                    <a
+                                        href="{% url 'users:product_detail' product.id %}"
+                                    >
+
+
+                                        {% if product.image_list %}
+
+                                            <img
+                                                src="{{ product.image_list.0 }}"
+                                                alt="{{ product.name }}"
+                                                class="product-image-custom"
+                                            >
+
+                                        {% else %}
+
+                                            <img
+                                                src="{% static 'images/home/product1.jpg' %}"
+                                                alt="{{ product.name }}"
+                                                class="product-image-custom"
+                                            >
+
+                                        {% endif %}
+
+
+                                    </a>
+
+
+
+                                    {% if product.status == 1 and product.sale > 0 %}
+
+                                        <h2>
+
+                                            ${{ product.sale }}
+
+                                        </h2>
+
+
+                                        <p>
+
+                                            <del>
+
+                                                ${{ product.price }}
+
+                                            </del>
+
+                                        </p>
+
+                                    {% else %}
+
+                                        <h2>
+
+                                            ${{ product.price }}
+
+                                        </h2>
+
+                                    {% endif %}
+
+
+
+                                    <p>
+
+                                        <a
+                                            href="{% url 'users:product_detail' product.id %}"
+                                            class="product-name-link"
+                                        >
+
+                                            {{ product.name }}
+
+                                        </a>
+
+                                    </p>
+
+
+
+                                    <a
+                                        href="{% url 'users:product_detail' product.id %}"
+                                        class="btn btn-default add-to-cart"
+                                    >
+
+                                        <i class="fa fa-eye"></i>
+
+                                        View Product
+
+                                    </a>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <div class="choose">
+
+
+                                <ul class="nav nav-pills nav-justified">
+
+
+                                    <li>
+
+                                        <a href="#">
+
+                                            <i class="fa fa-plus-square"></i>
+
+                                            Add to wishlist
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <a href="#">
+
+                                            <i class="fa fa-plus-square"></i>
+
+                                            Add to compare
+
+                                        </a>
+
+                                    </li>
+
+
+                                </ul>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% empty %}
+
+
+                    <div class="col-sm-12">
+
+                        <div class="alert alert-info">
+
+                            Không tìm thấy sản phẩm phù hợp.
+
+                        </div>
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            {% endif %}
+
+
+
+            <div class="pagination-wrapper">
+
+
+                {% if page_obj.has_previous %}
+
+
+                    <a
+                        class="btn btn-default"
+                        href="?{% if query_string %}{{ query_string }}&{% endif %}page=1"
+                    >
+
+                        First
+
+                    </a>
+
+
+                    <a
+                        class="btn btn-default"
+                        href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                    >
+
+                        Previous
+
+                    </a>
+
+
+                {% endif %}
+
+
+
+                <span
+                    style="
+                        display:inline-block;
+                        padding:10px 15px;
+                    "
+                >
+
+                    Page
+                    {{ page_obj.number }}
+                    /
+                    {{ page_obj.paginator.num_pages }}
+
+                </span>
+
+
+
+                {% if page_obj.has_next %}
+
+
+                    <a
+                        class="btn btn-default"
+                        href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
+                    >
+
+                        Next
+
+                    </a>
+
+
+                    <a
+                        class="btn btn-default"
+                        href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+                    >
+
+                        Last
+
+                    </a>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}

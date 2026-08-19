@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Search
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-sm-3">
+        {% include 'menuLeft.html' %}
+    </div>
+
+    <div class="col-sm-9">
+
+        <div class="features_items">
+
+            <h2 class="title text-center">
+                Search Results
+            </h2>
+
+            {% if keyword %}
+                <p>
+                    Search results for:
+                    <strong>{{ keyword }}</strong>
+                </p>
+            {% endif %}
+
+            {% for product in products %}
+
+                <div class="col-sm-4">
+                    <div class="product-image-wrapper">
+
+                        <div class="single-products">
+
+                            <div class="productinfo text-center">
+
+                                {% if product.image %}
+                                    <img
+                                        src="{{ product.image.url }}"
+                                        alt="{{ product.name }}"
+                                    >
+                                {% endif %}
+
+                                <h2>
+                                    ${{ product.price }}
+                                </h2>
+
+                                <p>
+                                    {{ product.name }}
+                                </p>
+
+                                <a
+                                    href="{% url 'users:product_detail' product.id %}"
+                                    class="btn btn-default add-to-cart"
+                                >
+                                    <i class="fa fa-eye"></i>
+                                    View Product
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            {% empty %}
+
+                {% if keyword %}
+                    <h4 class="text-center">
+                        No products found for "{{ keyword }}"
+                    </h4>
+                {% else %}
+                    <h4 class="text-center">
+                        Please enter a product name.
+                    </h4>
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

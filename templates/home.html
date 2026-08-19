@@ -10,7 +10,6 @@ Home | E-Shopper
 
 {% block slide %}
 
-
 <section id="slider">
 
     <div class="container">
@@ -19,13 +18,11 @@ Home | E-Shopper
 
             <div class="col-sm-12">
 
-
                 <div
                     id="slider-carousel"
                     class="carousel slide"
                     data-ride="carousel"
                 >
-
 
                     <ol class="carousel-indicators">
 
@@ -48,12 +45,9 @@ Home | E-Shopper
                     </ol>
 
 
-
                     <div class="carousel-inner">
 
-
                         <div class="item active">
-
 
                             <div class="col-sm-6">
 
@@ -96,13 +90,11 @@ Home | E-Shopper
 
                             </div>
 
-
                         </div>
 
 
 
                         <div class="item">
-
 
                             <div class="col-sm-6">
 
@@ -132,13 +124,11 @@ Home | E-Shopper
 
                             </div>
 
-
                         </div>
 
 
 
                         <div class="item">
-
 
                             <div class="col-sm-6">
 
@@ -163,9 +153,7 @@ Home | E-Shopper
 
                             </div>
 
-
                         </div>
-
 
                     </div>
 
@@ -187,9 +175,7 @@ Home | E-Shopper
                         <i class="fa fa-angle-right"></i>
                     </a>
 
-
                 </div>
-
 
             </div>
 
@@ -199,21 +185,17 @@ Home | E-Shopper
 
 </section>
 
-
 {% endblock %}
 
 
 
 {% block content %}
 
-
 <section>
 
     <div class="container">
 
-
         <div class="row">
-
 
             <div class="col-sm-3">
 
@@ -225,117 +207,54 @@ Home | E-Shopper
 
             <div class="col-sm-9 padding-right">
 
-
                 <div class="features_items">
-
 
                     <h2 class="title text-center">
                         Latest Products
                     </h2>
 
 
+                    <div id="product-list">
 
-                    {% for product in products %}
+                        {% for product in products %}
 
+                        <div class="col-sm-4">
 
-                    <div class="col-sm-4">
+                            <div class="product-image-wrapper">
 
+                                <div
+                                    class="single-products product-click"
+                                    data-url="{% url 'users:product_detail' product.id %}"
+                                    style="cursor:pointer;"
+                                >
 
-                        <div class="product-image-wrapper">
+                                    <div class="productinfo text-center">
 
+                                        {% if product.image_list %}
 
-                            <div
-                                class="single-products product-click"
-                                data-url="{% url 'users:product_detail' product.id %}"
-                                style="cursor:pointer;"
-                            >
+                                        <img
+                                            src="{{ product.image_list.0 }}"
+                                            alt="{{ product.name }}"
+                                            style="
+                                                width:100%;
+                                                height:250px;
+                                                object-fit:contain;
+                                            "
+                                        >
 
+                                        {% else %}
 
-                                <div class="productinfo text-center">
+                                        <img
+                                            src="{% static 'images/home/product1.jpg' %}"
+                                            alt="{{ product.name }}"
+                                            style="
+                                                width:100%;
+                                                height:250px;
+                                                object-fit:contain;
+                                            "
+                                        >
 
-
-                                    {% if product.image_list %}
-
-                                    <img
-                                        src="{{ product.image_list.0 }}"
-                                        alt="{{ product.name }}"
-                                        style="
-                                            width:100%;
-                                            height:250px;
-                                            object-fit:contain;
-                                        "
-                                    >
-
-                                    {% else %}
-
-                                    <img
-                                        src="{% static 'images/home/product1.jpg' %}"
-                                        alt="{{ product.name }}"
-                                        style="
-                                            width:100%;
-                                            height:250px;
-                                            object-fit:contain;
-                                        "
-                                    >
-
-                                    {% endif %}
-
-
-
-                                    {% if product.status == 1 and product.sale > 0 %}
-
-
-                                    <h2>
-                                        ${{ product.sale }}
-                                    </h2>
-
-
-                                    <p>
-                                        <del>
-                                            ${{ product.price }}
-                                        </del>
-                                    </p>
-
-
-                                    {% else %}
-
-
-                                    <h2>
-                                        ${{ product.price }}
-                                    </h2>
-
-
-                                    {% endif %}
-
-
-
-                                    <p>
-                                        {{ product.name }}
-                                    </p>
-
-
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-default add-to-cart"
-                                        data-product-id="{{ product.id }}"
-                                    >
-
-                                        <i class="fa fa-shopping-cart"></i>
-
-                                        Add to cart
-
-                                    </button>
-
-
-                                </div>
-
-
-
-                                <div class="product-overlay">
-
-
-                                    <div class="overlay-content">
+                                        {% endif %}
 
 
                                         {% if product.status == 1 and product.sale > 0 %}
@@ -343,6 +262,12 @@ Home | E-Shopper
                                         <h2>
                                             ${{ product.sale }}
                                         </h2>
+
+                                        <p>
+                                            <del>
+                                                ${{ product.price }}
+                                            </del>
+                                        </p>
 
                                         {% else %}
 
@@ -370,108 +295,138 @@ Home | E-Shopper
 
                                         </button>
 
+                                    </div>
+
+
+
+                                    <div class="product-overlay">
+
+                                        <div class="overlay-content">
+
+                                            {% if product.status == 1 and product.sale > 0 %}
+
+                                            <h2>
+                                                ${{ product.sale }}
+                                            </h2>
+
+                                            {% else %}
+
+                                            <h2>
+                                                ${{ product.price }}
+                                            </h2>
+
+                                            {% endif %}
+
+
+                                            <p>
+                                                {{ product.name }}
+                                            </p>
+
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-default add-to-cart"
+                                                data-product-id="{{ product.id }}"
+                                            >
+
+                                                <i class="fa fa-shopping-cart"></i>
+
+                                                Add to cart
+
+                                            </button>
+
+                                        </div>
 
                                     </div>
 
+
+
+                                    {% if product.status == 0 %}
+
+                                    <img
+                                        src="{% static 'images/home/new.png' %}"
+                                        class="new"
+                                        alt="New"
+                                    >
+
+                                    {% elif product.status == 1 %}
+
+                                    <img
+                                        src="{% static 'images/home/sale.png' %}"
+                                        class="new"
+                                        alt="Sale"
+                                    >
+
+                                    {% endif %}
 
                                 </div>
 
 
 
-                                {% if product.status == 0 %}
+                                <div class="choose">
 
-                                <img
-                                    src="{% static 'images/home/new.png' %}"
-                                    class="new"
-                                    alt="New"
-                                >
+                                    <ul class="nav nav-pills nav-justified">
 
-                                {% elif product.status == 1 %}
+                                        <li>
 
-                                <img
-                                    src="{% static 'images/home/sale.png' %}"
-                                    class="new"
-                                    alt="Sale"
-                                >
+                                            <a href="#">
 
-                                {% endif %}
+                                                <i class="fa fa-plus-square"></i>
+
+                                                Add to wishlist
+
+                                            </a>
+
+                                        </li>
 
 
-                            </div>
+                                        <li>
 
+                                            <a href="#">
 
+                                                <i class="fa fa-plus-square"></i>
 
-                            <div class="choose">
+                                                Add to compare
 
+                                            </a>
 
-                                <ul class="nav nav-pills nav-justified">
+                                        </li>
 
-                                    <li>
+                                    </ul>
 
-                                        <a href="#">
-
-                                            <i class="fa fa-plus-square"></i>
-
-                                            Add to wishlist
-
-                                        </a>
-
-                                    </li>
-
-                                    <li>
-
-                                        <a href="#">
-
-                                            <i class="fa fa-plus-square"></i>
-
-                                            Add to compare
-
-                                        </a>
-
-                                    </li>
-
-                                </ul>
-
+                                </div>
 
                             </div>
-
 
                         </div>
 
 
-                    </div>
+                        {% empty %}
 
+                        <div class="col-sm-12">
 
-                    {% empty %}
+                            <div class="alert alert-info text-center">
 
+                                Chưa có sản phẩm nào.
 
-                    <div class="col-sm-12">
-
-                        <div class="alert alert-info text-center">
-
-                            Chưa có sản phẩm nào.
+                            </div>
 
                         </div>
 
+                        {% endfor %}
+
                     </div>
-
-
-                    {% endfor %}
 
 
                 </div>
 
-
             </div>
 
-
         </div>
-
 
     </div>
 
 </section>
-
 
 {% endblock %}
 
@@ -479,13 +434,11 @@ Home | E-Shopper
 
 {% block extra_js %}
 
-
 <script>
 
 document.addEventListener(
     'DOMContentLoaded',
     function () {
-
 
         const csrfInput =
             document.querySelector(
@@ -499,246 +452,219 @@ document.addEventListener(
                 : '';
 
 
-
-        /*
-        CLICK PRODUCT -> DETAIL
-        */
-
-        document
-            .querySelectorAll(
-                '.product-click'
-            )
-            .forEach(
-                function (product) {
-
-
-                    product.addEventListener(
-                        'click',
-                        function (event) {
-
-
-                            if (
-                                event.target.closest(
-                                    '.add-to-cart'
-                                )
-                            ) {
-                                return;
-                            }
-
-
-                            if (
-                                event.target.closest(
-                                    '.choose'
-                                )
-                            ) {
-                                return;
-                            }
-
-
-                            window.location.href =
-                                product.dataset.url;
-
-
-                        }
-                    );
-
-
-                }
+        const productList =
+            document.getElementById(
+                'product-list'
             );
 
 
-
-        /*
-        ADD TO CART
-        */
-
-        document
-            .querySelectorAll(
-                '.add-to-cart'
-            )
-            .forEach(
-                function (button) {
+        if (!productList) {
+            return;
+        }
 
 
-                    button.addEventListener(
-                        'click',
-                        function (event) {
+        productList.addEventListener(
+            'click',
+            function (event) {
 
 
-                            event.preventDefault();
-
-                            event.stopPropagation();
-
-
-                            const productId =
-                                button.dataset.productId;
+                const cartButton =
+                    event.target.closest(
+                        '.add-to-cart'
+                    );
 
 
-                            if (!productId) {
+                if (cartButton) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+
+                    const productId =
+                        cartButton.dataset.productId;
+
+
+                    if (!productId) {
+
+                        alert(
+                            'Không tìm thấy Product ID'
+                        );
+
+                        return;
+
+                    }
+
+
+                    fetch(
+                        "{% url 'users:add_to_cart' %}",
+                        {
+
+                            method: 'POST',
+
+                            credentials:
+                                'same-origin',
+
+                            headers: {
+
+                                'Content-Type':
+                                    'application/json',
+
+                                'X-CSRFToken':
+                                    csrfToken
+
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    {
+                                        product_id:
+                                            productId
+                                    }
+                                )
+
+                        }
+                    )
+
+
+                    .then(
+                        function (response) {
+
+                            return response
+                                .json()
+                                .then(
+                                    function (data) {
+
+                                        return {
+                                            ok:
+                                                response.ok,
+
+                                            data:
+                                                data
+                                        };
+
+                                    }
+                                );
+
+                        }
+                    )
+
+
+                    .then(
+                        function (result) {
+
+                            if (!result.ok) {
 
                                 alert(
-                                    'Không tìm thấy Product ID'
+                                    result.data.message
+                                    ||
+                                    'Add cart error'
                                 );
 
                                 return;
+
                             }
 
 
-
-                            fetch(
-                                "{% url 'users:add_to_cart' %}",
-                                {
-
-                                    method: 'POST',
-
-                                    credentials:
-                                        'same-origin',
-
-                                    headers: {
-
-                                        'Content-Type':
-                                            'application/json',
-
-                                        'X-CSRFToken':
-                                            csrfToken
-
-                                    },
+                            const cartCount =
+                                document.getElementById(
+                                    'cart-count'
+                                );
 
 
-                                    body:
-                                        JSON.stringify(
-                                            {
-                                                product_id:
-                                                    productId
-                                            }
-                                        )
+                            if (cartCount) {
 
-                                }
-                            )
+                                cartCount.textContent =
+                                    result.data.cart_count;
+
+                            }
 
 
-                            .then(
-                                function (response) {
+                            const oldHTML =
+                                cartButton.innerHTML;
 
 
-                                    return response
-                                        .json()
-                                        .then(
-                                            function (data) {
-
-                                                return {
-                                                    ok:
-                                                        response.ok,
-
-                                                    data:
-                                                        data
-                                                };
-
-                                            }
-                                        );
+                            cartButton.innerHTML =
+                                '<i class="fa fa-check"></i> Added';
 
 
-                                }
-                            )
+                            cartButton.disabled =
+                                true;
 
 
-                            .then(
-                                function (result) {
+                            setTimeout(
+                                function () {
 
+                                    cartButton.innerHTML =
+                                        oldHTML;
 
-                                    if (!result.ok) {
+                                    cartButton.disabled =
+                                        false;
 
-                                        alert(
-                                            result.data.message
-                                            ||
-                                            'Add cart error'
-                                        );
-
-                                        return;
-
-                                    }
-
-
-                                    const data =
-                                        result.data;
-
-
-                                    const cartCount =
-                                        document.getElementById(
-                                            'cart-count'
-                                        );
-
-
-                                    if (cartCount) {
-
-                                        cartCount.textContent =
-                                            data.cart_count;
-
-                                    }
-
-
-
-                                    const oldHTML =
-                                        button.innerHTML;
-
-
-                                    button.innerHTML =
-                                        '<i class="fa fa-check"></i> Added';
-
-
-                                    button.disabled =
-                                        true;
-
-
-                                    setTimeout(
-                                        function () {
-
-                                            button.innerHTML =
-                                                oldHTML;
-
-                                            button.disabled =
-                                                false;
-
-                                        },
-                                        1000
-                                    );
-
-
-                                }
-                            )
-
-
-                            .catch(
-                                function (error) {
-
-
-                                    console.error(
-                                        'Add to cart:',
-                                        error
-                                    );
-
-
-                                    alert(
-                                        'Không thể thêm sản phẩm vào Cart.'
-                                    );
-
-
-                                }
+                                },
+                                1000
                             );
 
+                        }
+                    )
+
+
+                    .catch(
+                        function (error) {
+
+                            console.error(
+                                'Add to cart:',
+                                error
+                            );
+
+
+                            alert(
+                                'Không thể thêm sản phẩm vào Cart.'
+                            );
 
                         }
                     );
 
 
+                    return;
                 }
-            );
 
+
+
+                const choose =
+                    event.target.closest(
+                        '.choose'
+                    );
+
+
+                if (choose) {
+                    return;
+                }
+
+
+
+                const product =
+                    event.target.closest(
+                        '.product-click'
+                    );
+
+
+                if (
+                    product &&
+                    product.dataset.url
+                ) {
+
+                    window.location.href =
+                        product.dataset.url;
+
+                }
+
+
+            }
+        );
 
     }
 );
 
 </script>
-
 
 {% endblock %}
