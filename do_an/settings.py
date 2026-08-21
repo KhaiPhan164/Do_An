@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'blog',
     'ckeditor',
     'ckeditor_uploader',
+    'product',
 ]
 
 AUTH_USER_MODEL = 'users.User'

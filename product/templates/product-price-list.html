@@ -12,7 +12,7 @@
             <div class="productinfo text-center">
 
 
-                <a href="{% url 'users:product_detail' product.id %}">
+                <a href="{% url 'product:product_detail' product.id %}">
 
                     {% if product.image_list %}
 
@@ -70,7 +70,7 @@
 
 
                 <a
-                    href="{% url 'users:product_detail' product.id %}"
+                    href="{% url 'product:product_detail' product.id %}"
                     class="btn btn-default add-to-cart"
                 >
 

@@ -224,7 +224,7 @@ Home | E-Shopper
 
                                 <div
                                     class="single-products product-click"
-                                    data-url="{% url 'users:product_detail' product.id %}"
+                                    data-url="{% url 'product:product_detail' product.id %}"
                                     style="cursor:pointer;"
                                 >
 
@@ -496,7 +496,7 @@ document.addEventListener(
 
 
                     fetch(
-                        "{% url 'users:add_to_cart' %}",
+                        "{% url 'product:add_to_cart' %}",
                         {
 
                             method: 'POST',

@@ -21,7 +21,7 @@ Checkout | E-Shopper
 
                 <li>
 
-                    <a href="{% url 'users:home' %}">
+                    <a href="{% url 'product:home' %}">
                         Home
                     </a>
 
@@ -29,7 +29,7 @@ Checkout | E-Shopper
 
                 <li>
 
-                    <a href="{% url 'users:cart' %}">
+                    <a href="{% url 'product:cart' %}">
                         Cart
                     </a>
 
@@ -306,7 +306,7 @@ Checkout | E-Shopper
                             <td class="cart_product">
 
 
-                                <a href="{% url 'users:product_detail' item.product.id %}">
+                                <a href="{% url 'product:product_detail' item.product.id %}">
 
 
                                     {% if item.image %}
@@ -347,7 +347,7 @@ Checkout | E-Shopper
 
                                 <h4>
 
-                                    <a href="{% url 'users:product_detail' item.product.id %}">
+                                    <a href="{% url 'product:product_detail' item.product.id %}">
 
                                         {{ item.product.name }}
 
@@ -588,7 +588,7 @@ Checkout | E-Shopper
 
 
                 <a
-                    href="{% url 'users:home' %}"
+                    href="{% url 'product:home' %}"
                     class="btn btn-default"
                 >
 

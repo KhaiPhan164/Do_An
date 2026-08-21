@@ -23,7 +23,7 @@ Cart | E-Shopper
 
                 <li>
 
-                    <a href="{% url 'users:home' %}">
+                    <a href="{% url 'product:home' %}">
                         Home
                     </a>
 
@@ -91,7 +91,7 @@ Cart | E-Shopper
                         <td class="cart_product">
 
 
-                            <a href="{% url 'users:product_detail' item.product.id %}">
+                            <a href="{% url 'product:product_detail' item.product.id %}">
 
 
                                 {% if item.image %}
@@ -132,7 +132,7 @@ Cart | E-Shopper
 
                             <h4>
 
-                                <a href="{% url 'users:product_detail' item.product.id %}">
+                                <a href="{% url 'product:product_detail' item.product.id %}">
 
                                     {{ item.product.name }}
 
@@ -257,8 +257,8 @@ Cart | E-Shopper
                             </h4>
 
 
-                            <a
-                                href="{% url 'users:home' %}"
+                                <a
+                                href="{% url 'product:home' %}"
                                 class="btn btn-default"
                             >
 
@@ -357,7 +357,7 @@ Cart | E-Shopper
 
                     <a
                         class="btn btn-default check_out"
-                        href="{% url 'users:checkout' %}"
+                        href="{% url 'product:checkout' %}"
                     >
 
                         Check Out
@@ -523,7 +523,7 @@ document.addEventListener(
 
 
                             fetch(
-                                "{% url 'users:update_cart' %}",
+                                "{% url 'product:update_cart' %}",
                                 {
 
                                     method: 'POST',
@@ -662,7 +662,7 @@ document.addEventListener(
 
 
                             fetch(
-                                "{% url 'users:delete_cart_item' %}",
+                                "{% url 'product:delete_cart_item' %}",
                                 {
 
                                     method: 'POST',

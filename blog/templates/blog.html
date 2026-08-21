@@ -10,13 +10,11 @@ Blog
     <div class="container">
         <div class="row">
 
-            <!-- Menu bên trái -->
             <div class="col-sm-3">
                 {% include 'menuLeft.html' %}
             </div>
 
 
-            <!-- Blog List -->
             <div class="col-sm-9">
 
                 <div class="blog-post-area">
@@ -26,12 +24,10 @@ Blog
                     </h2>
 
 
-                    <!-- Danh sách bài viết -->
                     {% for blog in page_obj %}
 
                     <div class="single-blog-post">
 
-                        <!-- Tiêu đề -->
                         <h3>
                             <a href="{% url 'blog:blog_detail' blog.id %}">
                                 {{ blog.title }}
@@ -39,7 +35,6 @@ Blog
                         </h3>
 
 
-                        <!-- Thông tin bài viết -->
                         <div class="post-meta">
                             <ul>
 
@@ -65,8 +60,6 @@ Blog
                             </ul>
                         </div>
 
-
-                        <!-- Ảnh -->
                         {% if blog.image %}
 
                         <a href="{% url 'blog:blog_detail' blog.id %}">
@@ -86,7 +79,6 @@ Blog
                         {% endif %}
 
 
-                        <!-- Mô tả -->
                         {% if blog.des %}
 
                         <p>
@@ -102,7 +94,6 @@ Blog
                         {% endif %}
 
 
-                        <!-- Read More -->
                         <a
                             class="btn btn-primary"
                             href="{% url 'blog:blog_detail' blog.id %}"
@@ -123,9 +114,6 @@ Blog
 
 
 
-                    <!-- ======================= -->
-                    <!-- PHÂN TRANG -->
-                    <!-- ======================= -->
 
                     {% if page_obj.paginator.num_pages > 1 %}
 
@@ -134,7 +122,6 @@ Blog
                         <ul class="pagination">
 
 
-                            <!-- Previous -->
                             {% if page_obj.has_previous %}
 
                             <li>
@@ -148,8 +135,6 @@ Blog
                             {% endif %}
 
 
-
-                            <!-- Số trang -->
                             {% for num in page_obj.paginator.page_range %}
 
 
@@ -179,8 +164,6 @@ Blog
                             {% endfor %}
 
 
-
-                            <!-- Next -->
                             {% if page_obj.has_next %}
 
                             <li>

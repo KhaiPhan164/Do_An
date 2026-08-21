@@ -95,7 +95,7 @@
 
                     <div class="logo pull-left">
 
-                        <a href="{% url 'users:home' %}">
+                        <a href="{% url 'product:home' %}">
 
                             <img src="{% static 'images/home/logo.png' %}" alt="E-Shopper">
 
@@ -182,7 +182,7 @@
 
                             <li>
 
-                                <a href="/users/account/update/">
+                                <a href="{% url 'users:account_update' %}">
 
                                     <i class="fa fa-user"></i>
 
@@ -211,7 +211,7 @@
 
                             <li>
 
-                                <a href="{% url 'users:checkout' %}">
+                                <a href="{% url 'product:checkout' %}">
 
                                     <i class="fa fa-crosshairs"></i>
 
@@ -225,7 +225,7 @@
 
                             <li>
 
-                                <a href="{% url 'users:cart' %}">
+                                <a href="{% url 'product:cart' %}">
 
                                     <i class="fa fa-shopping-cart"></i>
 
@@ -357,7 +357,7 @@
 
                             <li>
 
-                                <a href="{% url 'users:home' %}">
+                                <a href="{% url 'product:home' %}">
 
                                     Home
 
@@ -383,7 +383,7 @@
 
                                     <li>
 
-                                        <a href="{% url 'users:home' %}">
+                                        <a href="{% url 'product:home' %}">
 
                                             Products
 
@@ -394,7 +394,7 @@
 
                                     <li>
 
-                                        <a href="{% url 'users:cart' %}">
+                                        <a href="{% url 'product:cart' %}">
 
                                             Cart
 
@@ -405,7 +405,7 @@
 
                                     <li>
 
-                                        <a href="{% url 'users:checkout' %}">
+                                        <a href="{% url 'product:checkout' %}">
 
                                             Checkout
 
@@ -488,7 +488,7 @@
 
                             <li>
 
-                                <a href="{% url 'users:search_advanced' %}">
+                                <a href="{% url 'product:search_advanced' %}">
 
                                     Search advanced
 
@@ -510,7 +510,7 @@
 
                     <div class="search_box pull-right">
 
-                        <form action="{% url 'users:search_product' %}" method="GET">
+                        <form action="{% url 'product:search_product' %}" method="GET">
 
                             <input type="text" name="keyword" placeholder="Search" value="{{ request.GET.keyword }}">
 

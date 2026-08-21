@@ -117,7 +117,7 @@ Search Advanced
 
 
             <form
-                action="{% url 'users:search_advanced' %}"
+                action="{% url 'product:search_advanced' %}"
                 method="GET"
                 class="advanced-search-form"
             >
@@ -330,7 +330,7 @@ Search Advanced
 
 
                                     <a
-                                        href="{% url 'users:product_detail' product.id %}"
+                                        href="{% url 'product:product_detail' product.id %}"
                                     >
 
 
@@ -391,7 +391,7 @@ Search Advanced
                                     <p>
 
                                         <a
-                                            href="{% url 'users:product_detail' product.id %}"
+                                            href="{% url 'product:product_detail' product.id %}"
                                             class="product-name-link"
                                         >
 
@@ -404,7 +404,7 @@ Search Advanced
 
 
                                     <a
-                                        href="{% url 'users:product_detail' product.id %}"
+                                        href="{% url 'product:product_detail' product.id %}"
                                         class="btn btn-default add-to-cart"
                                     >
 

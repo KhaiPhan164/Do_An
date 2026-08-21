@@ -14,7 +14,7 @@ My Product
 
     <div class="col-sm-3">
 
-        {% include 'users/account/menu-account.html' %}
+        {% include 'menu-account.html' %}
 
     </div>
 
@@ -118,7 +118,7 @@ My Product
 
 
                             <a
-                                href="{% url 'users:edit_product' product.id %}"
+                                href="{% url 'product:edit_product' product.id %}"
                                 style="
                                     margin-right: 30px;
                                     color: #3498db;
@@ -131,7 +131,7 @@ My Product
 
 
                             <a
-                                href="{% url 'users:delete_product' product.id %}"
+                                href="{% url 'product:delete_product' product.id %}"
                                 style="color: #3498db;"
                             >
 
@@ -179,7 +179,7 @@ My Product
         <div class="text-right">
 
             <a
-                href="{% url 'users:add_product' %}"
+                href="{% url 'product:add_product' %}"
                 class="btn btn-default"
                 style="
                     background: #FE980F;
