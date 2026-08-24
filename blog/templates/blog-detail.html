@@ -10,11 +10,8 @@
 {% block content %}
 
 
-<div
-    id="blog-detail"
-    data-comment-url="{% url 'blog:comment_blog' blog.id %}"
-    data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
->
+<div id="blog-detail" data-comment-url="{% url 'blog:comment_blog' blog.id %}"
+    data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
 
 
     <div class="row">
@@ -93,15 +90,11 @@
                     {% if blog.image %}
 
 
-                    <img
-                        src="{{ blog.image.url }}"
-                        alt="{{ blog.title }}"
-                        style="
+                    <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="
                             width: 100%;
                             height: auto;
                             margin-bottom: 25px;
-                        "
-                    >
+                        ">
 
 
                     {% endif %}
@@ -120,10 +113,7 @@
 
 
 
-                    <div
-                        class="comment-area"
-                        style="margin-top: 35px;"
-                    >
+                    <div class="comment-area" style="margin-top: 35px;">
 
 
                         <h4>
@@ -143,22 +133,14 @@
                             <div class="form-group">
 
 
-                                <textarea
-                                    id="comment-input"
-                                    name="comment"
-                                    class="form-control"
-                                    rows="4"
-                                    placeholder="Write your comment..."
-                                ></textarea>
+                                <textarea id="comment-input" name="comment" class="form-control" rows="4"
+                                    placeholder="Write your comment..."></textarea>
 
 
                             </div>
 
 
-                            <button
-                                type="submit"
-                                class="btn btn-primary"
-                            >
+                            <button type="submit" class="btn btn-primary">
 
                                 Comment
 
@@ -181,223 +163,128 @@
 
 
 
-                        <div id="comment-list">
-
+                        <ul id="comment-list">
 
                             {% for item in comments %}
 
-
-                            <div
-                                class="blog-comment"
-                                id="comment-{{ item.id }}"
-                                style="
-                                    padding: 15px 0;
-                                    border-bottom: 1px solid #ddd;
-                                "
-                            >
-
+                            <li class="blog-comment" id="comment-{{ item.id }}" style="
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+            list-style: none;
+        ">
 
                                 <div class="comment-content">
 
-
                                     <strong>
-
                                         <i class="fa fa-user"></i>
-
                                         {{ item.user.username }}
-
                                     </strong>
 
-
-                                    <span
-                                        style="
-                                            color: #999;
-                                            margin-left: 10px;
-                                            font-size: 12px;
-                                        "
-                                    >
-
+                                    <span style="
+                    color: #999;
+                    margin-left: 10px;
+                    font-size: 12px;
+                ">
                                         {{ item.time|date:"d/m/Y H:i" }}
-
                                     </span>
 
-
-
-                                    <p
-                                        style="
-                                            margin-top: 10px;
-                                        "
-                                    >
-
+                                    <p style="margin-top: 10px;">
                                         {{ item.comment }}
-
                                     </p>
 
-
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-link reply-button"
-                                        data-comment-id="{{ item.id }}"
-                                        style="
-                                            padding: 0;
-                                            margin-top: 5px;
-                                        "
-                                    >
-
+                                    <button type="button" class="btn btn-link reply-button"
+                                        data-comment-id="{{ item.id }}" style="
+                    padding: 0;
+                    margin-top: 5px;
+                ">
                                         <i class="fa fa-reply"></i>
-
                                         Reply
-
                                     </button>
-
 
                                 </div>
 
 
+                                <div class="reply-form-container" id="reply-form-{{ item.id }}" style="
+                display: none;
+                margin-left: 40px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            ">
 
-                                <div
-                                    class="reply-form-container"
-                                    id="reply-form-{{ item.id }}"
-                                    style="
-                                        display: none;
-                                        margin-left: 40px;
-                                        margin-top: 10px;
-                                        margin-bottom: 10px;
-                                    "
-                                >
-
-
-                                    <form
-                                        class="reply-form"
-                                        data-parent-id="{{ item.id }}"
-                                    >
-
+                                    <form class="reply-form" data-parent-id="{{ item.id }}">
 
                                         <div class="form-group">
 
-
-                                            <textarea
-                                                class="form-control reply-input"
-                                                rows="2"
-                                                placeholder="Write your reply..."
-                                            ></textarea>
-
+                                            <textarea class="form-control reply-input" rows="2"
+                                                placeholder="Write your reply..."></textarea>
 
                                         </div>
 
-
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-primary btn-sm"
-                                        >
-
+                                        <button type="submit" class="btn btn-primary btn-sm">
                                             Reply
-
                                         </button>
 
-
-
-                                        <button
-                                            type="button"
-                                            class="btn btn-default btn-sm cancel-reply"
-                                            data-comment-id="{{ item.id }}"
-                                        >
-
+                                        <button type="button" class="btn btn-default btn-sm cancel-reply"
+                                            data-comment-id="{{ item.id }}">
                                             Cancel
-
                                         </button>
-
 
                                     </form>
 
-
                                 </div>
 
 
-
-                                <div
-                                    class="reply-list"
-                                    id="reply-list-{{ item.id }}"
-                                >
-
+                                <ul class="reply-list" id="reply-list-{{ item.id }}" style="
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            ">
 
                                     {% for reply in item.replies.all %}
 
-
-                                    <div
-                                        class="blog-reply"
-                                        id="comment-{{ reply.id }}"
-                                        style="
-                                            margin-left: 40px;
-                                            margin-top: 15px;
-                                            padding-left: 15px;
-                                            border-left: 2px solid #ddd;
-                                        "
-                                    >
-
+                                    <li class="blog-reply" id="comment-{{ reply.id }}" style="
+                    margin-left: 40px;
+                    margin-top: 15px;
+                    padding-left: 15px;
+                    border-left: 2px solid #ddd;
+                    list-style: none;
+                ">
 
                                         <strong>
-
                                             <i class="fa fa-user"></i>
-
                                             {{ reply.user.username }}
-
                                         </strong>
 
-
-                                        <span
-                                            style="
-                                                color: #999;
-                                                margin-left: 10px;
-                                                font-size: 12px;
-                                            "
-                                        >
-
+                                        <span style="
+                        color: #999;
+                        margin-left: 10px;
+                        font-size: 12px;
+                    ">
                                             {{ reply.time|date:"d/m/Y H:i" }}
-
                                         </span>
 
-
-
-                                        <p
-                                            style="
-                                                margin-top: 8px;
-                                            "
-                                        >
-
+                                        <p style="margin-top: 8px;">
                                             {{ reply.comment }}
-
                                         </p>
 
-
-                                    </div>
-
+                                    </li>
 
                                     {% endfor %}
 
+                                </ul>
 
-                                </div>
-
-
-                            </div>
+                            </li>
 
 
                             {% empty %}
 
-
-                            <p id="no-comment-message">
-
+                            <li id="no-comment-message" style="list-style: none;">
                                 No comments yet.
-
-                            </p>
-
+                            </li>
 
                             {% endfor %}
 
-
-                        </div>
+                        </ul>
 
 
                     </div>
@@ -416,9 +303,7 @@
                             <li class="previous">
 
 
-                                <a
-                                    href="{% url 'blog:blog_detail' previous_blog.id %}"
-                                >
+                                <a href="{% url 'blog:blog_detail' previous_blog.id %}">
 
                                     <i class="fa fa-angle-left"></i>
 
@@ -440,9 +325,7 @@
                             <li class="next">
 
 
-                                <a
-                                    href="{% url 'blog:blog_detail' next_blog.id %}"
-                                >
+                                <a href="{% url 'blog:blog_detail' next_blog.id %}">
 
                                     Next
 
@@ -467,10 +350,7 @@
                     <div style="margin-top: 20px;">
 
 
-                        <a
-                            href="{% url 'blog:blog_list' %}"
-                            class="btn btn-default"
-                        >
+                        <a href="{% url 'blog:blog_list' %}" class="btn btn-default">
 
                             <i class="fa fa-arrow-left"></i>
 
@@ -507,227 +387,227 @@
 <script>
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
 
 
-        const blogDetail =
-            document.getElementById(
-                "blog-detail"
-            );
-
-
-        if (!blogDetail) {
-
-            return;
-
-        }
-
-
-
-        const isAuthenticated =
-            blogDetail.dataset.authenticated ===
-            "true";
-
-
-        const commentUrl =
-            blogDetail.dataset.commentUrl;
-
-
-        const commentForm =
-            document.getElementById(
-                "comment-form"
-            );
-
-
-        const commentInput =
-            document.getElementById(
-                "comment-input"
-            );
-
-
-        const commentList =
-            document.getElementById(
-                "comment-list"
-            );
-
-
-
-        function escapeHTML(value) {
-
-
-            const div =
-                document.createElement(
-                    "div"
+            const blogDetail =
+                document.getElementById(
+                    "blog-detail"
                 );
 
 
-            div.textContent =
-                value == null
-                    ? ""
-                    : value;
+            if (!blogDetail) {
 
+                return;
 
-            return div.innerHTML;
-
-
-        }
+            }
 
 
 
-        commentForm.addEventListener(
-            "submit",
-            function (event) {
+            const isAuthenticated =
+                blogDetail.dataset.authenticated ===
+                "true";
 
 
-                event.preventDefault();
+            const commentUrl =
+                blogDetail.dataset.commentUrl;
+
+
+            const commentForm =
+                document.getElementById(
+                    "comment-form"
+                );
+
+
+            const commentInput =
+                document.getElementById(
+                    "comment-input"
+                );
+
+
+            const commentList =
+                document.getElementById(
+                    "comment-list"
+                );
 
 
 
-                if (!isAuthenticated) {
+            function escapeHTML(value) {
 
 
-                    alert(
-                        "Please login to comment."
+                const div =
+                    document.createElement(
+                        "div"
                     );
 
 
-                    return;
+                div.textContent =
+                    value == null
+                        ? ""
+                        : value;
 
 
-                }
+                return div.innerHTML;
 
 
-
-                const comment =
-                    commentInput.value.trim();
-
-
-
-                if (comment === "") {
-
-
-                    alert(
-                        "Please enter your comment."
-                    );
-
-
-                    return;
-
-
-                }
+            }
 
 
 
-                fetch(
-                    commentUrl,
-                    {
+            commentForm.addEventListener(
+                "submit",
+                function (event) {
 
 
-                        method: "POST",
+                    event.preventDefault();
 
 
-                        headers: {
+
+                    if (!isAuthenticated) {
 
 
-                            "Content-Type":
-                                "application/x-www-form-urlencoded",
+                        alert(
+                            "Please login to comment."
+                        );
 
 
-                            "X-CSRFToken":
-                                "{{ csrf_token }}"
-
-
-                        },
-
-
-                        body:
-                            new URLSearchParams({
-
-                                "comment":
-                                    comment
-
-                            })
+                        return;
 
 
                     }
-                )
 
 
-                .then(
-                    function (response) {
+
+                    const comment =
+                        commentInput.value.trim();
 
 
-                        return response.json();
+
+                    if (comment === "") {
+
+
+                        alert(
+                            "Please enter your comment."
+                        );
+
+
+                        return;
 
 
                     }
-                )
-
-
-                .then(
-                    function (data) {
-
-
-                        if (!data.success) {
-
-
-                            alert(
-                                data.error
-                            );
-
-
-                            return;
-
-
-                        }
 
 
 
-                        const noCommentMessage =
-                            document.getElementById(
-                                "no-comment-message"
-                            );
+                    fetch(
+                        commentUrl,
+                        {
 
 
-
-                        if (
-                            noCommentMessage
-                        ) {
+                            method: "POST",
 
 
-                            noCommentMessage.remove();
+                            headers: {
+
+
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded",
+
+
+                                "X-CSRFToken":
+                                    "{{ csrf_token }}"
+
+
+                            },
+
+
+                            body:
+                                new URLSearchParams({
+
+                                    "comment":
+                                        comment
+
+                                })
 
 
                         }
+                    )
+
+
+                        .then(
+                            function (response) {
+
+
+                                return response.json();
+
+
+                            }
+                        )
+
+
+                        .then(
+                            function (data) {
+
+
+                                if (!data.success) {
+
+
+                                    alert(
+                                        data.error
+                                    );
+
+
+                                    return;
+
+
+                                }
 
 
 
-                        const id =
-                            data.data.id;
-
-
-                        const username =
-                            escapeHTML(
-                                data.data.username
-                            );
-
-
-                        const commentText =
-                            escapeHTML(
-                                data.data.comment
-                            );
-
-
-                        const time =
-                            escapeHTML(
-                                data.data.time
-                            );
+                                const noCommentMessage =
+                                    document.getElementById(
+                                        "no-comment-message"
+                                    );
 
 
 
-                        const commentHTML = `
+                                if (
+                                    noCommentMessage
+                                ) {
+
+
+                                    noCommentMessage.remove();
+
+
+                                }
+
+
+
+                                const id =
+                                    data.data.id;
+
+
+                                const username =
+                                    escapeHTML(
+                                        data.data.username
+                                    );
+
+
+                                const commentText =
+                                    escapeHTML(
+                                        data.data.comment
+                                    );
+
+
+                                const time =
+                                    escapeHTML(
+                                        data.data.time
+                                    );
+
+
+
+                                const commentHTML = `
 
 
                             <div
@@ -896,57 +776,234 @@ document.addEventListener(
 
 
 
-                        commentList.insertAdjacentHTML(
-                            "afterbegin",
-                            commentHTML
+                                commentList.insertAdjacentHTML(
+                                    "afterbegin",
+                                    commentHTML
+                                );
+
+
+
+                                commentInput.value =
+                                    "";
+
+
+                            }
+                        )
+
+
+                        .catch(
+                            function (error) {
+
+
+                                console.error(
+                                    error
+                                );
+
+
+                                alert(
+                                    "Something went wrong."
+                                );
+
+
+                            }
+                        );
+
+
+                }
+            );
+
+
+
+            document.addEventListener(
+                "click",
+                function (event) {
+
+
+                    const replyButton =
+                        event.target.closest(
+                            ".reply-button"
                         );
 
 
 
-                        commentInput.value =
-                            "";
+                    if (replyButton) {
+
+
+                        if (
+                            !isAuthenticated
+                        ) {
+
+
+                            alert(
+                                "Please login to reply."
+                            );
+
+
+                            return;
+
+
+                        }
+
+
+
+                        const commentId =
+                            replyButton.dataset.commentId;
+
+
+
+                        document
+                            .querySelectorAll(
+                                ".reply-form-container"
+                            )
+                            .forEach(
+                                function (item) {
+
+
+                                    item.style.display =
+                                        "none";
+
+
+                                }
+                            );
+
+
+
+                        const replyForm =
+                            document.getElementById(
+                                `reply-form-${commentId}`
+                            );
+
+
+
+                        if (
+                            replyForm
+                        ) {
+
+
+                            replyForm.style.display =
+                                "block";
+
+
+
+                            const input =
+                                replyForm.querySelector(
+                                    ".reply-input"
+                                );
+
+
+
+                            if (
+                                input
+                            ) {
+
+
+                                input.focus();
+
+
+                            }
+
+
+                        }
+
+
+
+                        return;
 
 
                     }
-                )
 
 
-                .catch(
-                    function (error) {
 
-
-                        console.error(
-                            error
+                    const cancelButton =
+                        event.target.closest(
+                            ".cancel-reply"
                         );
 
 
-                        alert(
-                            "Something went wrong."
-                        );
+
+                    if (
+                        cancelButton
+                    ) {
+
+
+                        const commentId =
+                            cancelButton.dataset.commentId;
+
+
+
+                        const replyForm =
+                            document.getElementById(
+                                `reply-form-${commentId}`
+                            );
+
+
+
+                        if (
+                            replyForm
+                        ) {
+
+
+                            replyForm.style.display =
+                                "none";
+
+
+
+                            const input =
+                                replyForm.querySelector(
+                                    ".reply-input"
+                                );
+
+
+
+                            if (
+                                input
+                            ) {
+
+
+                                input.value =
+                                    "";
+
+
+                            }
+
+
+                        }
 
 
                     }
-                );
 
 
-            }
-        );
-
-
-
-        document.addEventListener(
-            "click",
-            function (event) {
-
-
-                const replyButton =
-                    event.target.closest(
-                        ".reply-button"
-                    );
+                }
+            );
 
 
 
-                if (replyButton) {
+            document.addEventListener(
+                "submit",
+                function (event) {
+
+
+                    const form =
+                        event.target;
+
+
+
+                    if (
+                        !form.classList.contains(
+                            "reply-form"
+                        )
+                    ) {
+
+
+                        return;
+
+
+                    }
+
+
+
+                    event.preventDefault();
+
 
 
                     if (
@@ -966,314 +1023,137 @@ document.addEventListener(
 
 
 
-                    const commentId =
-                        replyButton.dataset.commentId;
+                    const parentId =
+                        form.dataset.parentId;
 
 
 
-                    document
-                        .querySelectorAll(
-                            ".reply-form-container"
-                        )
-                        .forEach(
-                            function (item) {
+                    const input =
+                        form.querySelector(
+                            ".reply-input"
+                        );
 
 
-                                item.style.display =
-                                    "none";
+
+                    const comment =
+                        input.value.trim();
+
+
+
+                    if (
+                        comment === ""
+                    ) {
+
+
+                        alert(
+                            "Please enter your reply."
+                        );
+
+
+                        return;
+
+
+                    }
+
+
+
+                    fetch(
+                        commentUrl,
+                        {
+
+
+                            method: "POST",
+
+
+                            headers: {
+
+
+                                "Content-Type":
+                                    "application/x-www-form-urlencoded",
+
+
+                                "X-CSRFToken":
+                                    "{{ csrf_token }}"
+
+
+                            },
+
+
+                            body:
+                                new URLSearchParams({
+
+
+                                    "comment":
+                                        comment,
+
+
+                                    "parent_id":
+                                        parentId
+
+
+                                })
+
+
+                        }
+                    )
+
+
+                        .then(
+                            function (response) {
+
+
+                                return response.json();
 
 
                             }
-                        );
+                        )
 
 
+                        .then(
+                            function (data) {
 
-                    const replyForm =
-                        document.getElementById(
-                            `reply-form-${commentId}`
-                        );
 
+                                if (
+                                    !data.success
+                                ) {
 
 
-                    if (
-                        replyForm
-                    ) {
+                                    alert(
+                                        data.error
+                                    );
 
 
-                        replyForm.style.display =
-                            "block";
+                                    return;
 
 
+                                }
 
-                        const input =
-                            replyForm.querySelector(
-                                ".reply-input"
-                            );
 
 
+                                const id =
+                                    data.data.id;
 
-                        if (
-                            input
-                        ) {
 
+                                const username =
+                                    escapeHTML(
+                                        data.data.username
+                                    );
 
-                            input.focus();
 
+                                const commentText =
+                                    escapeHTML(
+                                        data.data.comment
+                                    );
 
-                        }
 
+                                const time =
+                                    escapeHTML(
+                                        data.data.time
+                                    );
 
-                    }
 
 
-
-                    return;
-
-
-                }
-
-
-
-                const cancelButton =
-                    event.target.closest(
-                        ".cancel-reply"
-                    );
-
-
-
-                if (
-                    cancelButton
-                ) {
-
-
-                    const commentId =
-                        cancelButton.dataset.commentId;
-
-
-
-                    const replyForm =
-                        document.getElementById(
-                            `reply-form-${commentId}`
-                        );
-
-
-
-                    if (
-                        replyForm
-                    ) {
-
-
-                        replyForm.style.display =
-                            "none";
-
-
-
-                        const input =
-                            replyForm.querySelector(
-                                ".reply-input"
-                            );
-
-
-
-                        if (
-                            input
-                        ) {
-
-
-                            input.value =
-                                "";
-
-
-                        }
-
-
-                    }
-
-
-                }
-
-
-            }
-        );
-
-
-
-        document.addEventListener(
-            "submit",
-            function (event) {
-
-
-                const form =
-                    event.target;
-
-
-
-                if (
-                    !form.classList.contains(
-                        "reply-form"
-                    )
-                ) {
-
-
-                    return;
-
-
-                }
-
-
-
-                event.preventDefault();
-
-
-
-                if (
-                    !isAuthenticated
-                ) {
-
-
-                    alert(
-                        "Please login to reply."
-                    );
-
-
-                    return;
-
-
-                }
-
-
-
-                const parentId =
-                    form.dataset.parentId;
-
-
-
-                const input =
-                    form.querySelector(
-                        ".reply-input"
-                    );
-
-
-
-                const comment =
-                    input.value.trim();
-
-
-
-                if (
-                    comment === ""
-                ) {
-
-
-                    alert(
-                        "Please enter your reply."
-                    );
-
-
-                    return;
-
-
-                }
-
-
-
-                fetch(
-                    commentUrl,
-                    {
-
-
-                        method: "POST",
-
-
-                        headers: {
-
-
-                            "Content-Type":
-                                "application/x-www-form-urlencoded",
-
-
-                            "X-CSRFToken":
-                                "{{ csrf_token }}"
-
-
-                        },
-
-
-                        body:
-                            new URLSearchParams({
-
-
-                                "comment":
-                                    comment,
-
-
-                                "parent_id":
-                                    parentId
-
-
-                            })
-
-
-                    }
-                )
-
-
-                .then(
-                    function (response) {
-
-
-                        return response.json();
-
-
-                    }
-                )
-
-
-                .then(
-                    function (data) {
-
-
-                        if (
-                            !data.success
-                        ) {
-
-
-                            alert(
-                                data.error
-                            );
-
-
-                            return;
-
-
-                        }
-
-
-
-                        const id =
-                            data.data.id;
-
-
-                        const username =
-                            escapeHTML(
-                                data.data.username
-                            );
-
-
-                        const commentText =
-                            escapeHTML(
-                                data.data.comment
-                            );
-
-
-                        const time =
-                            escapeHTML(
-                                data.data.time
-                            );
-
-
-
-                        const replyHTML = `
+                                const replyHTML = `
 
 
                             <div
@@ -1339,80 +1219,80 @@ document.addEventListener(
 
 
 
-                        const replyList =
-                            document.getElementById(
-                                `reply-list-${parentId}`
-                            );
+                                const replyList =
+                                    document.getElementById(
+                                        `reply-list-${parentId}`
+                                    );
 
 
 
-                        if (
-                            replyList
-                        ) {
+                                if (
+                                    replyList
+                                ) {
 
 
-                            replyList.insertAdjacentHTML(
-                                "beforeend",
-                                replyHTML
-                            );
+                                    replyList.insertAdjacentHTML(
+                                        "beforeend",
+                                        replyHTML
+                                    );
 
 
-                        }
-
-
-
-                        input.value =
-                            "";
+                                }
 
 
 
-                        const replyForm =
-                            document.getElementById(
-                                `reply-form-${parentId}`
-                            );
+                                input.value =
+                                    "";
 
 
 
-                        if (
-                            replyForm
-                        ) {
+                                const replyForm =
+                                    document.getElementById(
+                                        `reply-form-${parentId}`
+                                    );
 
 
-                            replyForm.style.display =
-                                "none";
+
+                                if (
+                                    replyForm
+                                ) {
 
 
-                        }
+                                    replyForm.style.display =
+                                        "none";
 
 
-                    }
-                )
+                                }
 
 
-                .catch(
-                    function (error) {
+                            }
+                        )
 
 
-                        console.error(
-                            error
+                        .catch(
+                            function (error) {
+
+
+                                console.error(
+                                    error
+                                );
+
+
+                                alert(
+                                    "Something went wrong."
+                                );
+
+
+                            }
                         );
 
 
-                        alert(
-                            "Something went wrong."
-                        );
+                }
+            );
 
 
-                    }
-                );
-
-
-            }
-        );
-
-
-    }
-);
+        }
+    );
 
 
 </script>

@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Avg
+from django.db.models import Avg, Prefetch
 from django.utils.timezone import localtime
 from .models import Blog, Rates, Comments
 
@@ -74,7 +74,11 @@ def blog_detail(request, blog_id):
     ).select_related(
         'user'
     ).prefetch_related(
-        'replies__user'
+        Prefetch(
+            'replies',
+            queryset=Comments.objects.select_related('user').order_by('time'),
+            to_attr='ordered_replies'
+        )
     ).order_by('-time')
 
 
@@ -191,23 +195,25 @@ def comment_blog(request, blog_id):
     parent = None
 
     if parent_id:
-
         parent = get_object_or_404(
             Comments,
             id=parent_id,
             blog=blog,
-            parent__isnull=True
         )
 
+        if parent.parent_id is not None:
+            return JsonResponse({
+                'success': False,
+                'error': 'Only top-level comments can receive replies.'
+            })
 
     try:
-
         new_comment = Comments.objects.create(
             blog=blog,
             user=request.user,
             comment=comment,
             parent=parent,
-            level=1 if parent else 0
+            level=(parent.level + 1) if parent else 0,
         )
 
 
