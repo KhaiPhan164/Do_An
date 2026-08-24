@@ -1,511 +1,899 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
 {% block title %}
 {{ blog.title }}
 {% endblock %}
 
+
 {% block content %}
 
 
-
-<div class="row">
-
-    <div class="col-sm-3">
-        {% include 'menuLeft.html' %}
-    </div>
-
-    <div class="col-sm-9">
-
-        <div class="blog-post-area">
-
-            <h2 class="title text-center">
-                Blog Detail
-            </h2>
-
-            <div class="single-blog-post">
-
-                <h3>
-                    {{ blog.title }}
-                </h3>
-
-                <div class="post-meta">
-
-                    <ul>
-
-                        <li>
-                            <i class="fa fa-user"></i>
-                            {{ blog.author.username }}
-                        </li>
-
-                        <li>
-                            <i class="fa fa-clock-o"></i>
-                            {{ blog.created_at|date:"h:i A" }}
-                        </li>
-
-                        <li>
-                            <i class="fa fa-calendar"></i>
-                            {{ blog.created_at|date:"d M Y" }}
-                        </li>
-
-                    </ul>
-
-                </div>
-
-                {% if blog.image %}
-
-                <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="
-                        width: 100%;
-                        height: auto;
-                        margin-bottom: 25px;
-                    ">
-
-                {% endif %}
-
-                <div class="blog-content">
-
-                    {{ blog.content|safe }}
-
-                </div>
-
-                <div class="rate">
-
-                    <h4>
-                        Rate this blog
-                    </h4>
-
-                    <div class="vote">
-
-                        <div class="star_1 ratings_stars" data-rate="1">
-                        </div>
-
-                        <div class="star_2 ratings_stars" data-rate="2">
-                        </div>
-
-                        <div class="star_3 ratings_stars" data-rate="3">
-                        </div>
-
-                        <div class="star_4 ratings_stars" data-rate="4">
-                        </div>
-
-                        <div class="star_5 ratings_stars" data-rate="5">
-                        </div>
-
-                        <span class="rate-np" id="average-rate">
-                            {{ average_rate|default:"0" }}
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="comment-area" style="margin-top: 35px;">
-
-                    <h4>
-                        Leave a Comment
-                    </h4>
-
-                    <form id="comment-form">
-
-                        {% csrf_token %}
-
-                        <div class="form-group">
-
-                            <textarea id="comment-input" name="comment" class="form-control" rows="4"
-                                placeholder="Write your comment..."></textarea>
-
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">
-                            Comment
-                        </button>
-
-                    </form>
+<div
+    id="blog-detail"
+    data-comment-url="{% url 'blog:comment_blog' blog.id %}"
+    data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+>
 
 
-                    <hr>
+    <div class="row">
 
 
-                    <h4>
-                        Comments
-                    </h4>
+        <div class="col-sm-3">
+
+            {% include 'menuLeft.html' %}
+
+        </div>
 
 
-                    <div id="comment-list">
+        <div class="col-sm-9">
 
-                        {% for item in comments %}
 
-                        <div class="blog-comment" id="comment-{{ item.id }}" style="
-                padding: 15px 0;
-                border-bottom: 1px solid #ddd;
-            ">
+            <div class="blog-post-area">
 
-                            <strong>
+
+                <h2 class="title text-center">
+
+                    Blog Detail
+
+                </h2>
+
+
+                <div class="single-blog-post">
+
+
+                    <h3>
+
+                        {{ blog.title }}
+
+                    </h3>
+
+
+                    <div class="post-meta">
+
+
+                        <ul>
+
+
+                            <li>
 
                                 <i class="fa fa-user"></i>
 
-                                {{ item.user.username }}
+                                {{ blog.author.username }}
 
-                            </strong>
-
-                            <span style="
-                    color: #999;
-                    margin-left: 10px;
-                    font-size: 12px;
-                ">
-
-                                {{ item.time|date:"d/m/Y H:i" }}
-
-                            </span>
+                            </li>
 
 
-                            <p style="margin-top: 10px;">
+                            <li>
 
-                                {{ item.comment }}
+                                <i class="fa fa-clock-o"></i>
+
+                                {{ blog.created_at|date:"h:i A" }}
+
+                            </li>
+
+
+                            <li>
+
+                                <i class="fa fa-calendar"></i>
+
+                                {{ blog.created_at|date:"d M Y" }}
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+
+
+
+                    {% if blog.image %}
+
+
+                    <img
+                        src="{{ blog.image.url }}"
+                        alt="{{ blog.title }}"
+                        style="
+                            width: 100%;
+                            height: auto;
+                            margin-bottom: 25px;
+                        "
+                    >
+
+
+                    {% endif %}
+
+
+
+                    <div class="blog-content">
+
+                        {{ blog.content|safe }}
+
+                    </div>
+
+
+
+                    {% include 'rate/rate.html' %}
+
+
+
+                    <div
+                        class="comment-area"
+                        style="margin-top: 35px;"
+                    >
+
+
+                        <h4>
+
+                            Leave a Comment
+
+                        </h4>
+
+
+
+                        <form id="comment-form">
+
+
+                            {% csrf_token %}
+
+
+                            <div class="form-group">
+
+
+                                <textarea
+                                    id="comment-input"
+                                    name="comment"
+                                    class="form-control"
+                                    rows="4"
+                                    placeholder="Write your comment..."
+                                ></textarea>
+
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+
+                                Comment
+
+                            </button>
+
+
+                        </form>
+
+
+
+                        <hr>
+
+
+
+                        <h4>
+
+                            Comments
+
+                        </h4>
+
+
+
+                        <div id="comment-list">
+
+
+                            {% for item in comments %}
+
+
+                            <div
+                                class="blog-comment"
+                                id="comment-{{ item.id }}"
+                                style="
+                                    padding: 15px 0;
+                                    border-bottom: 1px solid #ddd;
+                                "
+                            >
+
+
+                                <div class="comment-content">
+
+
+                                    <strong>
+
+                                        <i class="fa fa-user"></i>
+
+                                        {{ item.user.username }}
+
+                                    </strong>
+
+
+                                    <span
+                                        style="
+                                            color: #999;
+                                            margin-left: 10px;
+                                            font-size: 12px;
+                                        "
+                                    >
+
+                                        {{ item.time|date:"d/m/Y H:i" }}
+
+                                    </span>
+
+
+
+                                    <p
+                                        style="
+                                            margin-top: 10px;
+                                        "
+                                    >
+
+                                        {{ item.comment }}
+
+                                    </p>
+
+
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-link reply-button"
+                                        data-comment-id="{{ item.id }}"
+                                        style="
+                                            padding: 0;
+                                            margin-top: 5px;
+                                        "
+                                    >
+
+                                        <i class="fa fa-reply"></i>
+
+                                        Reply
+
+                                    </button>
+
+
+                                </div>
+
+
+
+                                <div
+                                    class="reply-form-container"
+                                    id="reply-form-{{ item.id }}"
+                                    style="
+                                        display: none;
+                                        margin-left: 40px;
+                                        margin-top: 10px;
+                                        margin-bottom: 10px;
+                                    "
+                                >
+
+
+                                    <form
+                                        class="reply-form"
+                                        data-parent-id="{{ item.id }}"
+                                    >
+
+
+                                        <div class="form-group">
+
+
+                                            <textarea
+                                                class="form-control reply-input"
+                                                rows="2"
+                                                placeholder="Write your reply..."
+                                            ></textarea>
+
+
+                                        </div>
+
+
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary btn-sm"
+                                        >
+
+                                            Reply
+
+                                        </button>
+
+
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-default btn-sm cancel-reply"
+                                            data-comment-id="{{ item.id }}"
+                                        >
+
+                                            Cancel
+
+                                        </button>
+
+
+                                    </form>
+
+
+                                </div>
+
+
+
+                                <div
+                                    class="reply-list"
+                                    id="reply-list-{{ item.id }}"
+                                >
+
+
+                                    {% for reply in item.replies.all %}
+
+
+                                    <div
+                                        class="blog-reply"
+                                        id="comment-{{ reply.id }}"
+                                        style="
+                                            margin-left: 40px;
+                                            margin-top: 15px;
+                                            padding-left: 15px;
+                                            border-left: 2px solid #ddd;
+                                        "
+                                    >
+
+
+                                        <strong>
+
+                                            <i class="fa fa-user"></i>
+
+                                            {{ reply.user.username }}
+
+                                        </strong>
+
+
+                                        <span
+                                            style="
+                                                color: #999;
+                                                margin-left: 10px;
+                                                font-size: 12px;
+                                            "
+                                        >
+
+                                            {{ reply.time|date:"d/m/Y H:i" }}
+
+                                        </span>
+
+
+
+                                        <p
+                                            style="
+                                                margin-top: 8px;
+                                            "
+                                        >
+
+                                            {{ reply.comment }}
+
+                                        </p>
+
+
+                                    </div>
+
+
+                                    {% endfor %}
+
+
+                                </div>
+
+
+                            </div>
+
+
+                            {% empty %}
+
+
+                            <p id="no-comment-message">
+
+                                No comments yet.
 
                             </p>
 
 
-                            {% for reply in item.replies.all %}
-
-                            <div style="
-                    margin-left: 40px;
-                    margin-top: 15px;
-                    padding-left: 15px;
-                    border-left: 2px solid #ddd;
-                ">
-
-                                <strong>
-
-                                    <i class="fa fa-user"></i>
-
-                                    {{ reply.user.username }}
-
-                                </strong>
-
-                                <span style="
-                        color: #999;
-                        margin-left: 10px;
-                        font-size: 12px;
-                    ">
-
-                                    {{ reply.time|date:"d/m/Y H:i" }}
-
-                                </span>
-
-                                <p style="margin-top: 8px;">
-
-                                    {{ reply.comment }}
-
-                                </p>
-
-                            </div>
-
                             {% endfor %}
+
 
                         </div>
 
 
-                        {% empty %}
+                    </div>
 
-                        <p id="no-comment-message">
-                            No comments yet.
-                        </p>
 
-                        {% endfor %}
+
+                    <div class="pager-area">
+
+
+                        <ul class="pager">
+
+
+                            {% if previous_blog %}
+
+
+                            <li class="previous">
+
+
+                                <a
+                                    href="{% url 'blog:blog_detail' previous_blog.id %}"
+                                >
+
+                                    <i class="fa fa-angle-left"></i>
+
+                                    Prev
+
+                                </a>
+
+
+                            </li>
+
+
+                            {% endif %}
+
+
+
+                            {% if next_blog %}
+
+
+                            <li class="next">
+
+
+                                <a
+                                    href="{% url 'blog:blog_detail' next_blog.id %}"
+                                >
+
+                                    Next
+
+                                    <i class="fa fa-angle-right"></i>
+
+                                </a>
+
+
+                            </li>
+
+
+                            {% endif %}
+
+
+                        </ul>
+
 
                     </div>
 
-                </div>
 
-                <div class="pager-area">
 
-                    <ul class="pager">
+                    <div style="margin-top: 20px;">
 
-                        {% if previous_blog %}
 
-                        <li class="previous">
+                        <a
+                            href="{% url 'blog:blog_list' %}"
+                            class="btn btn-default"
+                        >
 
-                            <a href="{% url 'blog:blog_detail' previous_blog.id %}">
+                            <i class="fa fa-arrow-left"></i>
 
-                                <i class="fa fa-angle-left"></i>
+                            Back to Blog
 
-                                Prev
+                        </a>
 
-                            </a>
 
-                        </li>
+                    </div>
 
-                        {% endif %}
-
-                        {% if next_blog %}
-
-                        <li class="next">
-
-                            <a href="{% url 'blog:blog_detail' next_blog.id %}">
-
-                                Next
-
-                                <i class="fa fa-angle-right"></i>
-
-                            </a>
-
-                        </li>
-
-                        {% endif %}
-
-                    </ul>
 
                 </div>
 
-                <div style="margin-top: 20px;">
-
-                    <a href="{% url 'blog:blog_list' %}" class="btn btn-default">
-
-                        <i class="fa fa-arrow-left"></i>
-
-                        Back to Blog
-
-                    </a>
-
-                </div>
 
             </div>
 
+
         </div>
+
 
     </div>
 
+
 </div>
+
 
 {% endblock %}
 
+
+
 {% block extra_js %}
 
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const stars = document.querySelectorAll(".ratings_stars");
-        const averageRate = document.getElementById("average-rate");
-
-        const isAuthenticated = "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
-
-        stars.forEach(function (star) {
-
-            star.addEventListener("mouseenter", function () {
-
-                const rate = parseInt(this.dataset.rate);
-
-                stars.forEach(function (item) {
-
-                    const itemRate = parseInt(item.dataset.rate);
-
-                    if (itemRate <= rate) {
-                        item.classList.add("ratings_hover");
-                    } else {
-                        item.classList.remove("ratings_hover");
-                    }
-
-                });
-
-            });
 
 
-            star.addEventListener("mouseleave", function () {
-
-                stars.forEach(function (item) {
-                    item.classList.remove("ratings_hover");
-                });
-
-            });
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
 
-            star.addEventListener("click", function () {
+        const blogDetail =
+            document.getElementById(
+                "blog-detail"
+            );
+
+
+        if (!blogDetail) {
+
+            return;
+
+        }
+
+
+
+        const isAuthenticated =
+            blogDetail.dataset.authenticated ===
+            "true";
+
+
+        const commentUrl =
+            blogDetail.dataset.commentUrl;
+
+
+        const commentForm =
+            document.getElementById(
+                "comment-form"
+            );
+
+
+        const commentInput =
+            document.getElementById(
+                "comment-input"
+            );
+
+
+        const commentList =
+            document.getElementById(
+                "comment-list"
+            );
+
+
+
+        function escapeHTML(value) {
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                value == null
+                    ? ""
+                    : value;
+
+
+            return div.innerHTML;
+
+
+        }
+
+
+
+        commentForm.addEventListener(
+            "submit",
+            function (event) {
+
+
+                event.preventDefault();
+
+
 
                 if (!isAuthenticated) {
-                    alert("Please login to rate this blog.");
+
+
+                    alert(
+                        "Please login to comment."
+                    );
+
+
                     return;
+
+
                 }
 
-                const rate = parseInt(this.dataset.rate);
 
-                fetch("{% url 'blog:rate_blog' blog.id %}", {
 
-                    method: "POST",
+                const comment =
+                    commentInput.value.trim();
 
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
 
-                    body: new URLSearchParams({
-                        "rate": rate
-                    })
 
-                })
+                if (comment === "") {
 
-                    .then(function (response) {
+
+                    alert(
+                        "Please enter your comment."
+                    );
+
+
+                    return;
+
+
+                }
+
+
+
+                fetch(
+                    commentUrl,
+                    {
+
+
+                        method: "POST",
+
+
+                        headers: {
+
+
+                            "Content-Type":
+                                "application/x-www-form-urlencoded",
+
+
+                            "X-CSRFToken":
+                                "{{ csrf_token }}"
+
+
+                        },
+
+
+                        body:
+                            new URLSearchParams({
+
+                                "comment":
+                                    comment
+
+                            })
+
+
+                    }
+                )
+
+
+                .then(
+                    function (response) {
+
+
                         return response.json();
-                    })
 
-                    .then(function (data) {
 
-                        if (data.success) {
+                    }
+                )
 
-                            const avg = parseFloat(data.average_rate);
 
-                            averageRate.innerText = avg.toFixed(1);
+                .then(
+                    function (data) {
 
-                            stars.forEach(function (item) {
 
-                                const itemRate = parseInt(item.dataset.rate);
+                        if (!data.success) {
 
-                                item.classList.remove("ratings_hover");
 
-                                if (itemRate <= data.rate) {
-                                    item.classList.add("ratings_over");
-                                } else {
-                                    item.classList.remove("ratings_over");
-                                }
+                            alert(
+                                data.error
+                            );
 
-                            });
 
-                        } else {
+                            return;
 
-                            alert(data.error);
 
                         }
 
-                    })
 
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-
-            });
-
-        });
-
-    });
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const commentForm = document.getElementById("comment-form");
-
-        const commentInput = document.getElementById("comment-input");
-
-        const commentList = document.getElementById("comment-list");
-
-        const isAuthenticated =
-            "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
-
-
-        commentForm.addEventListener("submit", function (event) {
-
-            event.preventDefault();
-
-
-            if (!isAuthenticated) {
-
-                alert("Please login to comment.");
-
-                return;
-            }
-
-
-            const comment = commentInput.value.trim();
-
-
-            if (comment === "") {
-
-                alert("Please enter your comment.");
-
-                return;
-            }
-
-
-            fetch("{% url 'blog:comment_blog' blog.id %}", {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type": "application/x-www-form-urlencoded",
-
-                    "X-CSRFToken": "{{ csrf_token }}"
-
-                },
-
-                body: new URLSearchParams({
-
-                    "comment": comment
-
-                })
-
-            })
-
-                .then(function (response) {
-
-                    return response.json();
-
-                })
-
-                .then(function (data) {
-
-                    if (data.success) {
 
                         const noCommentMessage =
-                            document.getElementById("no-comment-message");
+                            document.getElementById(
+                                "no-comment-message"
+                            );
 
 
-                        if (noCommentMessage) {
+
+                        if (
+                            noCommentMessage
+                        ) {
+
 
                             noCommentMessage.remove();
 
+
                         }
+
+
+
+                        const id =
+                            data.data.id;
+
+
+                        const username =
+                            escapeHTML(
+                                data.data.username
+                            );
+
+
+                        const commentText =
+                            escapeHTML(
+                                data.data.comment
+                            );
+
+
+                        const time =
+                            escapeHTML(
+                                data.data.time
+                            );
+
 
 
                         const commentHTML = `
 
-                    <div
-                        class="blog-comment"
-                        id="comment-${data.data.id}"
-                        style="
-                            padding: 15px 0;
-                            border-bottom: 1px solid #ddd;
-                        "
-                    >
 
-                        <strong>
-
-                            <i class="fa fa-user"></i>
-
-                            ${data.data.username}
-
-                        </strong>
+                            <div
+                                class="blog-comment"
+                                id="comment-${id}"
+                                style="
+                                    padding: 15px 0;
+                                    border-bottom: 1px solid #ddd;
+                                "
+                            >
 
 
-                        <span
-                            style="
-                                color: #999;
-                                margin-left: 10px;
-                                font-size: 12px;
-                            "
-                        >
-
-                            ${data.data.time}
-
-                        </span>
+                                <div
+                                    class="comment-content"
+                                >
 
 
-                        <p style="margin-top: 10px;">
+                                    <strong>
 
-                            ${data.data.comment}
 
-                        </p>
+                                        <i
+                                            class="fa fa-user"
+                                        ></i>
 
-                    </div>
 
-                `;
+                                        ${username}
+
+
+                                    </strong>
+
+
+
+                                    <span
+                                        style="
+                                            color: #999;
+                                            margin-left: 10px;
+                                            font-size: 12px;
+                                        "
+                                    >
+
+
+                                        ${time}
+
+
+                                    </span>
+
+
+
+                                    <p
+                                        style="
+                                            margin-top: 10px;
+                                        "
+                                    >
+
+
+                                        ${commentText}
+
+
+                                    </p>
+
+
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-link reply-button"
+                                        data-comment-id="${id}"
+                                        style="
+                                            padding: 0;
+                                            margin-top: 5px;
+                                        "
+                                    >
+
+
+                                        <i
+                                            class="fa fa-reply"
+                                        ></i>
+
+
+                                        Reply
+
+
+                                    </button>
+
+
+                                </div>
+
+
+
+                                <div
+                                    class="reply-form-container"
+                                    id="reply-form-${id}"
+                                    style="
+                                        display: none;
+                                        margin-left: 40px;
+                                        margin-top: 10px;
+                                        margin-bottom: 10px;
+                                    "
+                                >
+
+
+                                    <form
+                                        class="reply-form"
+                                        data-parent-id="${id}"
+                                    >
+
+
+                                        <div
+                                            class="form-group"
+                                        >
+
+
+                                            <textarea
+                                                class="form-control reply-input"
+                                                rows="2"
+                                                placeholder="Write your reply..."
+                                            ></textarea>
+
+
+                                        </div>
+
+
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary btn-sm"
+                                        >
+
+
+                                            Reply
+
+
+                                        </button>
+
+
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-default btn-sm cancel-reply"
+                                            data-comment-id="${id}"
+                                        >
+
+
+                                            Cancel
+
+
+                                        </button>
+
+
+                                    </form>
+
+
+                                </div>
+
+
+
+                                <div
+                                    class="reply-list"
+                                    id="reply-list-${id}"
+                                ></div>
+
+
+                            </div>
+
+
+                        `;
+
 
 
                         commentList.insertAdjacentHTML(
@@ -514,29 +902,520 @@
                         );
 
 
-                        commentInput.value = "";
+
+                        commentInput.value =
+                            "";
 
 
-                    } else {
+                    }
+                )
 
-                        alert(data.error);
+
+                .catch(
+                    function (error) {
+
+
+                        console.error(
+                            error
+                        );
+
+
+                        alert(
+                            "Something went wrong."
+                        );
+
+
+                    }
+                );
+
+
+            }
+        );
+
+
+
+        document.addEventListener(
+            "click",
+            function (event) {
+
+
+                const replyButton =
+                    event.target.closest(
+                        ".reply-button"
+                    );
+
+
+
+                if (replyButton) {
+
+
+                    if (
+                        !isAuthenticated
+                    ) {
+
+
+                        alert(
+                            "Please login to reply."
+                        );
+
+
+                        return;
+
 
                     }
 
-                })
 
-                .catch(function (error) {
 
-                    console.log(error);
+                    const commentId =
+                        replyButton.dataset.commentId;
 
-                    alert("Something went wrong.");
 
-                });
 
-        });
+                    document
+                        .querySelectorAll(
+                            ".reply-form-container"
+                        )
+                        .forEach(
+                            function (item) {
 
-    });
+
+                                item.style.display =
+                                    "none";
+
+
+                            }
+                        );
+
+
+
+                    const replyForm =
+                        document.getElementById(
+                            `reply-form-${commentId}`
+                        );
+
+
+
+                    if (
+                        replyForm
+                    ) {
+
+
+                        replyForm.style.display =
+                            "block";
+
+
+
+                        const input =
+                            replyForm.querySelector(
+                                ".reply-input"
+                            );
+
+
+
+                        if (
+                            input
+                        ) {
+
+
+                            input.focus();
+
+
+                        }
+
+
+                    }
+
+
+
+                    return;
+
+
+                }
+
+
+
+                const cancelButton =
+                    event.target.closest(
+                        ".cancel-reply"
+                    );
+
+
+
+                if (
+                    cancelButton
+                ) {
+
+
+                    const commentId =
+                        cancelButton.dataset.commentId;
+
+
+
+                    const replyForm =
+                        document.getElementById(
+                            `reply-form-${commentId}`
+                        );
+
+
+
+                    if (
+                        replyForm
+                    ) {
+
+
+                        replyForm.style.display =
+                            "none";
+
+
+
+                        const input =
+                            replyForm.querySelector(
+                                ".reply-input"
+                            );
+
+
+
+                        if (
+                            input
+                        ) {
+
+
+                            input.value =
+                                "";
+
+
+                        }
+
+
+                    }
+
+
+                }
+
+
+            }
+        );
+
+
+
+        document.addEventListener(
+            "submit",
+            function (event) {
+
+
+                const form =
+                    event.target;
+
+
+
+                if (
+                    !form.classList.contains(
+                        "reply-form"
+                    )
+                ) {
+
+
+                    return;
+
+
+                }
+
+
+
+                event.preventDefault();
+
+
+
+                if (
+                    !isAuthenticated
+                ) {
+
+
+                    alert(
+                        "Please login to reply."
+                    );
+
+
+                    return;
+
+
+                }
+
+
+
+                const parentId =
+                    form.dataset.parentId;
+
+
+
+                const input =
+                    form.querySelector(
+                        ".reply-input"
+                    );
+
+
+
+                const comment =
+                    input.value.trim();
+
+
+
+                if (
+                    comment === ""
+                ) {
+
+
+                    alert(
+                        "Please enter your reply."
+                    );
+
+
+                    return;
+
+
+                }
+
+
+
+                fetch(
+                    commentUrl,
+                    {
+
+
+                        method: "POST",
+
+
+                        headers: {
+
+
+                            "Content-Type":
+                                "application/x-www-form-urlencoded",
+
+
+                            "X-CSRFToken":
+                                "{{ csrf_token }}"
+
+
+                        },
+
+
+                        body:
+                            new URLSearchParams({
+
+
+                                "comment":
+                                    comment,
+
+
+                                "parent_id":
+                                    parentId
+
+
+                            })
+
+
+                    }
+                )
+
+
+                .then(
+                    function (response) {
+
+
+                        return response.json();
+
+
+                    }
+                )
+
+
+                .then(
+                    function (data) {
+
+
+                        if (
+                            !data.success
+                        ) {
+
+
+                            alert(
+                                data.error
+                            );
+
+
+                            return;
+
+
+                        }
+
+
+
+                        const id =
+                            data.data.id;
+
+
+                        const username =
+                            escapeHTML(
+                                data.data.username
+                            );
+
+
+                        const commentText =
+                            escapeHTML(
+                                data.data.comment
+                            );
+
+
+                        const time =
+                            escapeHTML(
+                                data.data.time
+                            );
+
+
+
+                        const replyHTML = `
+
+
+                            <div
+                                class="blog-reply"
+                                id="comment-${id}"
+                                style="
+                                    margin-left: 40px;
+                                    margin-top: 15px;
+                                    padding-left: 15px;
+                                    border-left: 2px solid #ddd;
+                                "
+                            >
+
+
+                                <strong>
+
+
+                                    <i
+                                        class="fa fa-user"
+                                    ></i>
+
+
+                                    ${username}
+
+
+                                </strong>
+
+
+
+                                <span
+                                    style="
+                                        color: #999;
+                                        margin-left: 10px;
+                                        font-size: 12px;
+                                    "
+                                >
+
+
+                                    ${time}
+
+
+                                </span>
+
+
+
+                                <p
+                                    style="
+                                        margin-top: 8px;
+                                    "
+                                >
+
+
+                                    ${commentText}
+
+
+                                </p>
+
+
+                            </div>
+
+
+                        `;
+
+
+
+                        const replyList =
+                            document.getElementById(
+                                `reply-list-${parentId}`
+                            );
+
+
+
+                        if (
+                            replyList
+                        ) {
+
+
+                            replyList.insertAdjacentHTML(
+                                "beforeend",
+                                replyHTML
+                            );
+
+
+                        }
+
+
+
+                        input.value =
+                            "";
+
+
+
+                        const replyForm =
+                            document.getElementById(
+                                `reply-form-${parentId}`
+                            );
+
+
+
+                        if (
+                            replyForm
+                        ) {
+
+
+                            replyForm.style.display =
+                                "none";
+
+
+                        }
+
+
+                    }
+                )
+
+
+                .catch(
+                    function (error) {
+
+
+                        console.error(
+                            error
+                        );
+
+
+                        alert(
+                            "Something went wrong."
+                        );
+
+
+                    }
+                );
+
+
+            }
+        );
+
+
+    }
+);
+
 
 </script>
+
 
 {% endblock %}

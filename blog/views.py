@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Avg
-
+from django.utils.timezone import localtime
 from .models import Blog, Rates, Comments
 
 
@@ -17,7 +17,7 @@ def blog_list(request):
 
     return render(
         request,
-        'blog/blog.html',
+        'blog.html',
         {
             'page_obj': page_obj
         }
@@ -25,6 +25,7 @@ def blog_list(request):
 
 
 def blog_detail(request, blog_id):
+
     blog = get_object_or_404(
         Blog,
         id=blog_id
@@ -38,6 +39,7 @@ def blog_detail(request, blog_id):
         id__lt=blog.id
     ).order_by('-id').first()
 
+
     average_rate = Rates.objects.filter(
         blog=blog
     ).aggregate(
@@ -47,30 +49,47 @@ def blog_detail(request, blog_id):
     if average_rate is None:
         average_rate = 0
     else:
-        average_rate = round(average_rate, 1)
+        average_rate = round(
+            average_rate,
+            1
+        )
+
+
+    user_rate = 0
+
+    if request.user.is_authenticated:
+
+        user_rating = Rates.objects.filter(
+            blog=blog,
+            author=request.user
+        ).first()
+
+        if user_rating:
+            user_rate = user_rating.rate
+
 
     comments = Comments.objects.filter(
-        blog_id=blog_id,
+        blog=blog,
         parent__isnull=True
-    ).select_related('user').order_by('-time')
+    ).select_related(
+        'user'
+    ).prefetch_related(
+        'replies__user'
+    ).order_by('-time')
 
-    context = {
-        'blog': blog,
-        'comments': comments,
-    }
 
     return render(
         request,
-        'blog/blog-detail.html',
+        'blog-detail.html',
         {
             'blog': blog,
             'previous_blog': previous_blog,
             'next_blog': next_blog,
             'average_rate': average_rate,
+            'user_rate': user_rate,
             'comments': comments
         }
     )
-
 
 def rate_blog(request, blog_id):
 
@@ -135,50 +154,94 @@ def rate_blog(request, blog_id):
 
 
 def comment_blog(request, blog_id):
-    if request.method == 'POST':
 
-        if not request.user.is_authenticated:
-            return JsonResponse({
-                'success': False,
-                'error': 'User not authenticated'
-            })
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid request method'
+        })
 
-        comment = request.POST.get('comment')
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'success': False,
+            'error': 'User not authenticated'
+        })
 
-        if not comment:
-            return JsonResponse({
-                'success': False,
-                'error': 'Comment cannot be empty'
-            })
+    blog = get_object_or_404(
+        Blog,
+        id=blog_id
+    )
 
-        try:
-            new_comment = Comments.objects.create(
-                blog_id=blog_id,
-                user=request.user,
-                comment=comment,
-                level=0
-            )
+    comment = request.POST.get(
+        'comment',
+        ''
+    ).strip()
 
-            return JsonResponse({
-                'success': True,
-                'data': {
-                    'id': new_comment.id,
-                    'blog_id': new_comment.blog_id,
-                    'comment': new_comment.comment,
-                    'user_id': new_comment.user.id,
-                    'username': new_comment.user.username,
-                    'level': new_comment.level,
-                    'time': new_comment.time,
-                }
-            })
+    parent_id = request.POST.get(
+        'parent_id'
+    )
 
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'error': str(e)
-            })
+    if not comment:
+        return JsonResponse({
+            'success': False,
+            'error': 'Comment cannot be empty'
+        })
 
-    return JsonResponse({
-        'success': False,
-        'error': 'Invalid request method'
-    })
+
+    parent = None
+
+    if parent_id:
+
+        parent = get_object_or_404(
+            Comments,
+            id=parent_id,
+            blog=blog,
+            parent__isnull=True
+        )
+
+
+    try:
+
+        new_comment = Comments.objects.create(
+            blog=blog,
+            user=request.user,
+            comment=comment,
+            parent=parent,
+            level=1 if parent else 0
+        )
+
+
+        return JsonResponse({
+            'success': True,
+            'data': {
+
+                'id': new_comment.id,
+
+                'blog_id': new_comment.blog_id,
+
+                'comment': new_comment.comment,
+
+                'user_id': new_comment.user.id,
+
+                'username': new_comment.user.username,
+
+                'level': new_comment.level,
+
+                'parent_id': new_comment.parent_id,
+
+                'time': localtime(
+                     new_comment.time
+                    ).strftime(
+                        '%d/%m/%Y %H:%M'
+                    )
+
+            }
+        })
+
+
+    except Exception as e:
+
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })
