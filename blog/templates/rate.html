@@ -1,18 +1,10 @@
 {% load static %}
 
-<link
-    type="text/css"
-    rel="stylesheet"
-    href="{% static 'css/rate.css' %}"
->
+<link type="text/css" rel="stylesheet" href="{% static 'css/rate.css' %}">
 
 
-<div
-    class="rate"
-    id="blog-rate"
-    data-rate-url="{% url 'blog:rate_blog' blog.id %}"
-    data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
->
+<div class="rate" id="blog-rate" data-rate-url="{% url 'blog:rate_blog' blog.id %}"
+    data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
 
     <h4>
         Rate this blog
@@ -21,36 +13,12 @@
 
     <div class="vote">
 
-        <div
-            class="star_1 ratings_stars {% if user_rate >= 1 %}ratings_over{% endif %}"
-            data-rate="1"
-        ></div>
+        {% for i in "12345" %}
+        <div class="star_{{ i }} ratings_stars {% if user_rate >= i|add:'0' %}ratings_over{% endif %}"
+            data-rate="{{ i }}"></div>
+        {% endfor %}
 
-        <div
-            class="star_2 ratings_stars {% if user_rate >= 2 %}ratings_over{% endif %}"
-            data-rate="2"
-        ></div>
-
-        <div
-            class="star_3 ratings_stars {% if user_rate >= 3 %}ratings_over{% endif %}"
-            data-rate="3"
-        ></div>
-
-        <div
-            class="star_4 ratings_stars {% if user_rate >= 4 %}ratings_over{% endif %}"
-            data-rate="4"
-        ></div>
-
-        <div
-            class="star_5 ratings_stars {% if user_rate >= 5 %}ratings_over{% endif %}"
-            data-rate="5"
-        ></div>
-
-
-        <span
-            class="rate-np"
-            id="average-rate"
-        >
+        <span class="rate-np" id="average-rate">
             {{ average_rate|default:"0" }}
         </span>
 
@@ -61,248 +29,248 @@
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
 
-        const rateBox =
-            document.getElementById(
-                "blog-rate"
-            );
+            const rateBox =
+                document.getElementById(
+                    "blog-rate"
+                );
 
-        if (!rateBox) {
-            return;
-        }
-
-
-        const stars =
-            rateBox.querySelectorAll(
-                ".ratings_stars"
-            );
+            if (!rateBox) {
+                return;
+            }
 
 
-        const averageRate =
-            document.getElementById(
-                "average-rate"
-            );
+            const stars =
+                rateBox.querySelectorAll(
+                    ".ratings_stars"
+                );
 
 
-        const rateUrl =
-            rateBox.dataset.rateUrl;
+            const averageRate =
+                document.getElementById(
+                    "average-rate"
+                );
 
 
-        const isAuthenticated =
-            rateBox.dataset.authenticated ===
-            "true";
+            const rateUrl =
+                rateBox.dataset.rateUrl;
 
 
-        stars.forEach(
-            function (star) {
+            const isAuthenticated =
+                rateBox.dataset.authenticated ===
+                "true";
 
 
-                star.addEventListener(
-                    "mouseenter",
-                    function () {
+            stars.forEach(
+                function (star) {
 
-                        const rate =
-                            parseInt(
-                                this.dataset.rate
+
+                    star.addEventListener(
+                        "mouseenter",
+                        function () {
+
+                            const rate =
+                                parseInt(
+                                    this.dataset.rate
+                                );
+
+
+                            stars.forEach(
+                                function (item) {
+
+                                    const itemRate =
+                                        parseInt(
+                                            item.dataset.rate
+                                        );
+
+
+                                    if (
+                                        itemRate <= rate
+                                    ) {
+
+                                        item.classList.add(
+                                            "ratings_hover"
+                                        );
+
+                                    } else {
+
+                                        item.classList.remove(
+                                            "ratings_hover"
+                                        );
+
+                                    }
+
+                                }
                             );
 
-
-                        stars.forEach(
-                            function (item) {
-
-                                const itemRate =
-                                    parseInt(
-                                        item.dataset.rate
-                                    );
+                        }
+                    );
 
 
-                                if (
-                                    itemRate <= rate
-                                ) {
+                    star.addEventListener(
+                        "mouseleave",
+                        function () {
 
-                                    item.classList.add(
-                                        "ratings_hover"
-                                    );
-
-                                } else {
+                            stars.forEach(
+                                function (item) {
 
                                     item.classList.remove(
                                         "ratings_hover"
                                     );
 
                                 }
-
-                            }
-                        );
-
-                    }
-                );
-
-
-                star.addEventListener(
-                    "mouseleave",
-                    function () {
-
-                        stars.forEach(
-                            function (item) {
-
-                                item.classList.remove(
-                                    "ratings_hover"
-                                );
-
-                            }
-                        );
-
-                    }
-                );
-
-
-                star.addEventListener(
-                    "click",
-                    function () {
-
-                        if (
-                            !isAuthenticated
-                        ) {
-
-                            alert(
-                                "Please login to rate this blog."
                             );
-
-                            return;
 
                         }
+                    );
 
 
-                        const rate =
-                            parseInt(
-                                this.dataset.rate
-                            );
+                    star.addEventListener(
+                        "click",
+                        function () {
 
+                            if (
+                                !isAuthenticated
+                            ) {
 
-                        fetch(
-                            rateUrl,
-                            {
+                                alert(
+                                    "Please login to rate this blog."
+                                );
 
-                                method: "POST",
-
-                                headers: {
-
-                                    "Content-Type":
-                                        "application/x-www-form-urlencoded",
-
-                                    "X-CSRFToken":
-                                        "{{ csrf_token }}"
-
-                                },
-
-                                body:
-                                    new URLSearchParams({
-
-                                        "rate": rate
-
-                                    })
+                                return;
 
                             }
-                        )
 
 
-                        .then(
-                            function (response) {
-
-                                return response.json();
-
-                            }
-                        )
+                            const rate =
+                                parseInt(
+                                    this.dataset.rate
+                                );
 
 
-                        .then(
-                            function (data) {
+                            fetch(
+                                rateUrl,
+                                {
 
-                                if (
-                                    !data.success
-                                ) {
+                                    method: "POST",
 
-                                    alert(
-                                        data.error
-                                    );
+                                    headers: {
 
-                                    return;
+                                        "Content-Type":
+                                            "application/x-www-form-urlencoded",
+
+                                        "X-CSRFToken":
+                                            "{{ csrf_token }}"
+
+                                    },
+
+                                    body:
+                                        new URLSearchParams({
+
+                                            "rate": rate
+
+                                        })
 
                                 }
+                            )
 
 
-                                const average =
-                                    parseFloat(
-                                        data.average_rate
-                                    );
+                                .then(
+                                    function (response) {
+
+                                        return response.json();
+
+                                    }
+                                )
 
 
-                                averageRate.textContent =
-                                    average.toFixed(1);
-
-
-                                stars.forEach(
-                                    function (item) {
-
-                                        const itemRate =
-                                            parseInt(
-                                                item.dataset.rate
-                                            );
-
-
-                                        item.classList.remove(
-                                            "ratings_hover"
-                                        );
-
+                                .then(
+                                    function (data) {
 
                                         if (
-                                            itemRate <= data.rate
+                                            !data.success
                                         ) {
 
-                                            item.classList.add(
-                                                "ratings_over"
+                                            alert(
+                                                data.error
                                             );
 
-                                        } else {
-
-                                            item.classList.remove(
-                                                "ratings_over"
-                                            );
+                                            return;
 
                                         }
+
+
+                                        const average =
+                                            parseFloat(
+                                                data.average_rate
+                                            );
+
+
+                                        averageRate.textContent =
+                                            average.toFixed(1);
+
+
+                                        stars.forEach(
+                                            function (item) {
+
+                                                const itemRate =
+                                                    parseInt(
+                                                        item.dataset.rate
+                                                    );
+
+
+                                                item.classList.remove(
+                                                    "ratings_hover"
+                                                );
+
+
+                                                if (
+                                                    itemRate <= data.rate
+                                                ) {
+
+                                                    item.classList.add(
+                                                        "ratings_over"
+                                                    );
+
+                                                } else {
+
+                                                    item.classList.remove(
+                                                        "ratings_over"
+                                                    );
+
+                                                }
+
+                                            }
+                                        );
+
+                                    }
+                                )
+
+
+                                .catch(
+                                    function (error) {
+
+                                        console.error(
+                                            error
+                                        );
+
+                                        alert(
+                                            "Something went wrong."
+                                        );
 
                                     }
                                 );
 
-                            }
-                        )
+                        }
+                    );
 
+                }
+            );
 
-                        .catch(
-                            function (error) {
-
-                                console.error(
-                                    error
-                                );
-
-                                alert(
-                                    "Something went wrong."
-                                );
-
-                            }
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-    }
-);
+        }
+    );
 
 </script>

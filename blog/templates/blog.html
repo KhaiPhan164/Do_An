@@ -14,15 +14,10 @@ Blog
                 {% include 'menuLeft.html' %}
             </div>
 
-
             <div class="col-sm-9">
-
                 <div class="blog-post-area">
 
-                    <h2 class="title text-center">
-                        Latest From our Blog
-                    </h2>
-
+                    <h2 class="title text-center">Latest From our Blog</h2>
 
                     {% for blog in page_obj %}
 
@@ -34,17 +29,14 @@ Blog
                             </a>
                         </h3>
 
-
                         <div class="post-meta">
                             <ul>
-
                                 <li>
                                     <i class="fa fa-user"></i>
                                     {{ blog.author.username }}
                                 </li>
 
                                 {% if blog.created_at %}
-
                                 <li>
                                     <i class="fa fa-clock-o"></i>
                                     {{ blog.created_at|date:"h:i A" }}
@@ -54,45 +46,28 @@ Blog
                                     <i class="fa fa-calendar"></i>
                                     {{ blog.created_at|date:"d M Y" }}
                                 </li>
-
                                 {% endif %}
-
                             </ul>
                         </div>
 
                         {% if blog.image %}
-
                         <a href="{% url 'blog:blog_detail' blog.id %}">
-
                             <img
                                 src="{{ blog.image.url }}"
                                 alt="{{ blog.title }}"
-                                style="
-                                    width: 100%;
-                                    height: auto;
-                                    object-fit: cover;
-                                "
                             >
-
                         </a>
-
                         {% endif %}
 
-
                         {% if blog.des %}
-
                         <p>
                             {{ blog.des|truncatewords:50 }}
                         </p>
-
                         {% else %}
-
                         <p>
                             {{ blog.content|striptags|truncatewords:50 }}
                         </p>
-
                         {% endif %}
-
 
                         <a
                             class="btn btn-primary"
@@ -103,40 +78,28 @@ Blog
 
                     </div>
 
-
                     {% empty %}
 
-                    <p>
-                        Chưa có bài viết nào.
-                    </p>
+                    <p>Chưa có bài viết nào.</p>
 
                     {% endfor %}
-
-
 
 
                     {% if page_obj.paginator.num_pages > 1 %}
 
                     <div class="pagination-area">
-
                         <ul class="pagination">
 
-
                             {% if page_obj.has_previous %}
-
                             <li>
                                 <a href="?page={{ page_obj.previous_page_number }}">
-
                                     <i class="fa fa-angle-double-left"></i>
-
                                 </a>
                             </li>
-
                             {% endif %}
 
 
                             {% for num in page_obj.paginator.page_range %}
-
 
                                 {% if page_obj.number == num %}
 
@@ -149,7 +112,6 @@ Blog
                                     </a>
                                 </li>
 
-
                                 {% else %}
 
                                 <li>
@@ -160,32 +122,23 @@ Blog
 
                                 {% endif %}
 
-
                             {% endfor %}
 
 
                             {% if page_obj.has_next %}
-
                             <li>
                                 <a href="?page={{ page_obj.next_page_number }}">
-
                                     <i class="fa fa-angle-double-right"></i>
-
                                 </a>
                             </li>
-
                             {% endif %}
 
-
                         </ul>
-
                     </div>
 
                     {% endif %}
 
-
                 </div>
-
             </div>
 
         </div>

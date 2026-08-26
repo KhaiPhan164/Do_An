@@ -1,231 +1,247 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block title %}
 {{ blog.title }}
 {% endblock %}
 
-
 {% block content %}
 
-
-<div id="blog-detail" data-comment-url="{% url 'blog:comment_blog' blog.id %}"
-    data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
-
+<div
+    id="blog-detail"
+    data-comment-url="{% url 'blog:comment_blog' blog.id %}"
+    data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+>
 
     <div class="row">
 
-
         <div class="col-sm-3">
-
             {% include 'menuLeft.html' %}
-
         </div>
-
 
         <div class="col-sm-9">
 
-
             <div class="blog-post-area">
 
-
                 <h2 class="title text-center">
-
                     Blog Detail
-
                 </h2>
-
 
                 <div class="single-blog-post">
 
-
                     <h3>
-
                         {{ blog.title }}
-
                     </h3>
-
 
                     <div class="post-meta">
 
-
                         <ul>
 
-
                             <li>
-
                                 <i class="fa fa-user"></i>
-
                                 {{ blog.author.username }}
-
                             </li>
 
-
                             <li>
-
                                 <i class="fa fa-clock-o"></i>
-
                                 {{ blog.created_at|date:"h:i A" }}
-
                             </li>
-
 
                             <li>
-
                                 <i class="fa fa-calendar"></i>
-
                                 {{ blog.created_at|date:"d M Y" }}
-
                             </li>
-
 
                         </ul>
 
-
                     </div>
-
 
 
                     {% if blog.image %}
 
-
-                    <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="
-                            width: 100%;
-                            height: auto;
-                            margin-bottom: 25px;
-                        ">
-
+                        <img
+                            src="{{ blog.image.url }}"
+                            alt="{{ blog.title }}"
+                            style="
+                                width: 100%;
+                                height: auto;
+                                margin-bottom: 25px;
+                            "
+                        >
 
                     {% endif %}
 
 
-
                     <div class="blog-content">
-
                         {{ blog.content|safe }}
-
                     </div>
 
 
+                    <div class="pager-area">
 
-                    {% include 'rate.html' %}
+                        <ul class="pager pull-right">
 
+                            {% if previous_blog %}
 
+                                <li>
+                                    <a href="{% url 'blog:blog_detail' previous_blog.id %}">
+                                        Pre
+                                    </a>
+                                </li>
 
-                    <div class="comment-area" style="margin-top: 35px;">
-
-
-                        <h4>
-
-                            Leave a Comment
-
-                        </h4>
-
-
-
-                        <form id="comment-form">
+                            {% endif %}
 
 
-                            {% csrf_token %}
+                            {% if next_blog %}
+
+                                <li>
+                                    <a href="{% url 'blog:blog_detail' next_blog.id %}">
+                                        Next
+                                    </a>
+                                </li>
+
+                            {% endif %}
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
 
 
-                            <div class="form-group">
+            {% include 'rate.html' %}
 
 
-                                <textarea id="comment-input" name="comment" class="form-control" rows="4"
-                                    placeholder="Write your comment..."></textarea>
+            <div class="response-area">
+
+                <h2>
+                    <span id="response-count">
+                        {{ comments|length }}
+                    </span>
+                    RESPONSES
+                </h2>
 
 
-                            </div>
+                <ul
+                    class="media-list"
+                    id="comment-list"
+                >
+
+                    {% for item in comments %}
+
+                        <li
+                            class="media blog-comment"
+                            id="comment-{{ item.id }}"
+                        >
+
+                            <a
+                                class="pull-left"
+                                href="#"
+                            >
+
+                                {% if item.user.avatar %}
+
+                                    <img
+                                        class="media-object"
+                                        src="{{ item.user.avatar.url }}"
+                                        alt="{{ item.user.username }}"
+                                        style="
+                                            width: 80px;
+                                            height: 80px;
+                                            object-fit: cover;
+                                        "
+                                    >
+
+                                {% else %}
+
+                                    <img
+                                        class="media-object"
+                                        src="{% static 'images/blog/man-two.jpg' %}"
+                                        alt="{{ item.user.username }}"
+                                    >
+
+                                {% endif %}
+
+                            </a>
 
 
-                            <button type="submit" class="btn btn-primary">
+                            <div class="media-body">
 
-                                Comment
+                                <ul class="sinlge-post-meta">
 
-                            </button>
-
-
-                        </form>
-
-
-
-                        <hr>
-
-
-
-                        <h4>
-
-                            Comments
-
-                        </h4>
-
-
-
-                        <ul id="comment-list">
-
-                            {% for item in comments %}
-
-                            <li class="blog-comment" id="comment-{{ item.id }}" style="
-            padding: 15px 0;
-            border-bottom: 1px solid #ddd;
-            list-style: none;
-        ">
-
-                                <div class="comment-content">
-
-                                    <strong>
+                                    <li>
                                         <i class="fa fa-user"></i>
                                         {{ item.user.username }}
-                                    </strong>
+                                    </li>
 
-                                    <span style="
-                    color: #999;
-                    margin-left: 10px;
-                    font-size: 12px;
-                ">
-                                        {{ item.time|date:"d/m/Y H:i" }}
-                                    </span>
+                                    <li>
+                                        <i class="fa fa-clock-o"></i>
+                                        {{ item.time|date:"h:i A" }}
+                                    </li>
 
-                                    <p style="margin-top: 10px;">
-                                        {{ item.comment }}
-                                    </p>
+                                    <li>
+                                        <i class="fa fa-calendar"></i>
+                                        {{ item.time|date:"d M Y" }}
+                                    </li>
 
-                                    <button type="button" class="btn btn-link reply-button"
-                                        data-comment-id="{{ item.id }}" style="
-                    padding: 0;
-                    margin-top: 5px;
-                ">
-                                        <i class="fa fa-reply"></i>
-                                        Reply
-                                    </button>
-
-                                </div>
+                                </ul>
 
 
-                                <div class="reply-form-container" id="reply-form-{{ item.id }}" style="
-                display: none;
-                margin-left: 40px;
-                margin-top: 10px;
-                margin-bottom: 10px;
-            ">
+                                <p>
+                                    {{ item.comment }}
+                                </p>
 
-                                    <form class="reply-form" data-parent-id="{{ item.id }}">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary reply-button"
+                                    data-comment-id="{{ item.id }}"
+                                >
+                                    <i class="fa fa-reply"></i>
+                                    Reply
+                                </button>
+
+
+                                <div
+                                    class="reply-form-container"
+                                    id="reply-form-{{ item.id }}"
+                                    style="
+                                        display: none;
+                                        margin-top: 15px;
+                                    "
+                                >
+
+                                    <form
+                                        class="reply-form"
+                                        data-parent-id="{{ item.id }}"
+                                    >
 
                                         <div class="form-group">
 
-                                            <textarea class="form-control reply-input" rows="2"
-                                                placeholder="Write your reply..."></textarea>
+                                            <textarea
+                                                class="form-control reply-input"
+                                                rows="3"
+                                                placeholder="Write your reply..."
+                                            ></textarea>
 
                                         </div>
 
-                                        <button type="submit" class="btn btn-primary btn-sm">
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary btn-sm reply-submit"
+                                        >
                                             Reply
                                         </button>
 
-                                        <button type="button" class="btn btn-default btn-sm cancel-reply"
-                                            data-comment-id="{{ item.id }}">
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-default btn-sm cancel-reply"
+                                            data-comment-id="{{ item.id }}"
+                                        >
                                             Cancel
                                         </button>
 
@@ -233,149 +249,194 @@
 
                                 </div>
 
+                            </div>
 
-                                <ul class="reply-list" id="reply-list-{{ item.id }}" style="
-                margin: 0;
-                padding: 0;
-                list-style: none;
-            ">
 
-                                    {% for reply in item.replies.all %}
+                            <ul
+                                class="media-list reply-list"
+                                id="reply-list-{{ item.id }}"
+                            >
 
-                                    <li class="blog-reply" id="comment-{{ reply.id }}" style="
-                    margin-left: 40px;
-                    margin-top: 15px;
-                    padding-left: 15px;
-                    border-left: 2px solid #ddd;
-                    list-style: none;
-                ">
+                                {% for reply in item.replies.all %}
 
-                                        <strong>
-                                            <i class="fa fa-user"></i>
-                                            {{ reply.user.username }}
-                                        </strong>
+                                    <li
+                                        class="media second-media blog-reply"
+                                        id="comment-{{ reply.id }}"
+                                    >
 
-                                        <span style="
-                        color: #999;
-                        margin-left: 10px;
-                        font-size: 12px;
-                    ">
-                                            {{ reply.time|date:"d/m/Y H:i" }}
-                                        </span>
+                                        <a
+                                            class="pull-left"
+                                            href="#"
+                                        >
 
-                                        <p style="margin-top: 8px;">
-                                            {{ reply.comment }}
-                                        </p>
+                                            {% if reply.user.avatar %}
+
+                                                <img
+                                                    class="media-object"
+                                                    src="{{ reply.user.avatar.url }}"
+                                                    alt="{{ reply.user.username }}"
+                                                    style="
+                                                        width: 80px;
+                                                        height: 80px;
+                                                        object-fit: cover;
+                                                    "
+                                                >
+
+                                            {% else %}
+
+                                                <img
+                                                    class="media-object"
+                                                    src="{% static 'images/blog/man-three.jpg' %}"
+                                                    alt="{{ reply.user.username }}"
+                                                >
+
+                                            {% endif %}
+
+                                        </a>
+
+
+                                        <div class="media-body">
+
+                                            <ul class="sinlge-post-meta">
+
+                                                <li>
+                                                    <i class="fa fa-user"></i>
+                                                    {{ reply.user.username }}
+                                                </li>
+
+                                                <li>
+                                                    <i class="fa fa-clock-o"></i>
+                                                    {{ reply.time|date:"h:i A" }}
+                                                </li>
+
+                                                <li>
+                                                    <i class="fa fa-calendar"></i>
+                                                    {{ reply.time|date:"d M Y" }}
+                                                </li>
+
+                                            </ul>
+
+
+                                            <p>
+                                                {{ reply.comment }}
+                                            </p>
+
+                                        </div>
 
                                     </li>
 
-                                    {% endfor %}
+                                {% endfor %}
 
-                                </ul>
+                            </ul>
 
-                            </li>
+                        </li>
 
+                    {% empty %}
 
-                            {% empty %}
+                        <li
+                            id="no-comment-message"
+                            class="media"
+                        >
+                            <div class="media-body">
+                                <p>
+                                    No comments yet.
+                                </p>
+                            </div>
+                        </li>
 
-                            <li id="no-comment-message" style="list-style: none;">
-                                No comments yet.
-                            </li>
+                    {% endfor %}
 
-                            {% endfor %}
-
-                        </ul>
-
-
-                    </div>
-
-
-
-                    <div class="pager-area">
-
-
-                        <ul class="pager">
-
-
-                            {% if previous_blog %}
-
-
-                            <li class="previous">
-
-
-                                <a href="{% url 'blog:blog_detail' previous_blog.id %}">
-
-                                    <i class="fa fa-angle-left"></i>
-
-                                    Prev
-
-                                </a>
-
-
-                            </li>
-
-
-                            {% endif %}
-
-
-
-                            {% if next_blog %}
-
-
-                            <li class="next">
-
-
-                                <a href="{% url 'blog:blog_detail' next_blog.id %}">
-
-                                    Next
-
-                                    <i class="fa fa-angle-right"></i>
-
-                                </a>
-
-
-                            </li>
-
-
-                            {% endif %}
-
-
-                        </ul>
-
-
-                    </div>
-
-
-
-                    <div style="margin-top: 20px;">
-
-
-                        <a href="{% url 'blog:blog_list' %}" class="btn btn-default">
-
-                            <i class="fa fa-arrow-left"></i>
-
-                            Back to Blog
-
-                        </a>
-
-
-                    </div>
-
-
-                </div>
-
+                </ul>
 
             </div>
 
 
-        </div>
+            <div class="replay-box">
 
+                <div class="row">
+
+                    <div class="col-sm-12">
+
+                        <h2>
+                            Leave a reply
+                        </h2>
+
+
+                        <form id="comment-form">
+
+                            {% csrf_token %}
+
+
+                            <div class="text-area">
+
+                                <div class="blank-arrow">
+
+                                    <label>
+
+                                        {% if request.user.is_authenticated %}
+
+                                            {{ request.user.username }}
+
+                                        {% else %}
+
+                                            Your Comment
+
+                                        {% endif %}
+
+                                    </label>
+
+                                </div>
+
+
+                                <span>*</span>
+
+
+                                <textarea
+                                    id="comment-input"
+                                    name="comment"
+                                    rows="11"
+                                    placeholder="Write your comment..."
+                                ></textarea>
+
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Post Comment
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div style="margin-top: 25px; margin-bottom: 25px;">
+
+                <a
+                    href="{% url 'blog:blog_list' %}"
+                    class="btn btn-default"
+                >
+
+                    <i class="fa fa-arrow-left"></i>
+
+                    Back to Blog
+
+                </a>
+
+            </div>
+
+        </div>
 
     </div>
 
-
 </div>
-
 
 {% endblock %}
 
@@ -383,919 +444,836 @@
 
 {% block extra_js %}
 
-
 <script>
 
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
+        const blogDetail =
+            document.getElementById(
+                "blog-detail"
+            );
 
 
-            const blogDetail =
-                document.getElementById(
-                    "blog-detail"
+        if (!blogDetail) {
+            return;
+        }
+
+
+        const isAuthenticated =
+            blogDetail.dataset.authenticated === "true";
+
+
+        const commentUrl =
+            blogDetail.dataset.commentUrl;
+
+
+        const commentForm =
+            document.getElementById(
+                "comment-form"
+            );
+
+
+        const commentInput =
+            document.getElementById(
+                "comment-input"
+            );
+
+
+        const commentList =
+            document.getElementById(
+                "comment-list"
+            );
+
+
+        const responseCount =
+            document.getElementById(
+                "response-count"
+            );
+
+
+        const csrfInput =
+            document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+            );
+
+
+        const csrfToken =
+            csrfInput
+                ? csrfInput.value
+                : "";
+
+
+        const defaultCommentAvatar =
+            "{% static 'images/blog/man-two.jpg' %}";
+
+
+        const defaultReplyAvatar =
+            "{% static 'images/blog/man-three.jpg' %}";
+
+
+
+        function escapeHTML(value) {
+
+            const div =
+                document.createElement(
+                    "div"
                 );
 
 
-            if (!blogDetail) {
+            div.textContent =
+                value == null
+                    ? ""
+                    : value;
 
-                return;
+
+            return div.innerHTML;
+
+        }
+
+
+
+        function formatAvatar(
+            avatar,
+            defaultAvatar
+        ) {
+
+            if (
+                avatar &&
+                avatar.trim() !== ""
+            ) {
+
+                return escapeHTML(
+                    avatar
+                );
 
             }
 
 
+            return defaultAvatar;
 
-            const isAuthenticated =
-                blogDetail.dataset.authenticated ===
-                "true";
-
-
-            const commentUrl =
-                blogDetail.dataset.commentUrl;
-
-
-            const commentForm =
-                document.getElementById(
-                    "comment-form"
-                );
-
-
-            const commentInput =
-                document.getElementById(
-                    "comment-input"
-                );
-
-
-            const commentList =
-                document.getElementById(
-                    "comment-list"
-                );
+        }
 
 
 
-            function escapeHTML(value) {
+        commentForm.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
 
 
-                const div =
-                    document.createElement(
-                        "div"
+                if (!isAuthenticated) {
+
+                    alert(
+                        "Please login to comment."
                     );
 
+                    return;
 
-                div.textContent =
-                    value == null
-                        ? ""
-                        : value;
+                }
 
 
-                return div.innerHTML;
+                const comment =
+                    commentInput.value.trim();
 
 
-            }
+                if (comment === "") {
+
+                    alert(
+                        "Please enter your comment."
+                    );
+
+                    return;
+
+                }
 
 
+                fetch(
+                    commentUrl,
+                    {
 
-            commentForm.addEventListener(
-                "submit",
-                function (event) {
+                        method: "POST",
 
+                        headers: {
 
-                    event.preventDefault();
+                            "Content-Type":
+                                "application/x-www-form-urlencoded",
 
+                            "X-CSRFToken":
+                                csrfToken
 
+                        },
 
-                    if (!isAuthenticated) {
+                        body:
+                            new URLSearchParams({
 
+                                comment: comment
 
-                        alert(
-                            "Please login to comment."
-                        );
-
-
-                        return;
-
-
-                    }
-
-
-
-                    const comment =
-                        commentInput.value.trim();
-
-
-
-                    if (comment === "") {
-
-
-                        alert(
-                            "Please enter your comment."
-                        );
-
-
-                        return;
-
+                            })
 
                     }
+                )
 
+                .then(
+                    function (response) {
 
+                        return response.json();
 
-                    fetch(
-                        commentUrl,
-                        {
+                    }
+                )
 
+                .then(
+                    function (data) {
 
-                            method: "POST",
+                        if (!data.success) {
 
+                            alert(
+                                data.error ||
+                                "Unable to add comment."
+                            );
 
-                            headers: {
-
-
-                                "Content-Type":
-                                    "application/x-www-form-urlencoded",
-
-
-                                "X-CSRFToken":
-                                    "{{ csrf_token }}"
-
-
-                            },
-
-
-                            body:
-                                new URLSearchParams({
-
-                                    "comment":
-                                        comment
-
-                                })
-
+                            return;
 
                         }
-                    )
 
 
-                        .then(
-                            function (response) {
+                        const noCommentMessage =
+                            document.getElementById(
+                                "no-comment-message"
+                            );
 
 
-                                return response.json();
+                        if (noCommentMessage) {
+
+                            noCommentMessage.remove();
+
+                        }
 
 
-                            }
-                        )
+                        const id =
+                            data.data.id;
 
 
-                        .then(
-                            function (data) {
+                        const username =
+                            escapeHTML(
+                                data.data.username
+                            );
 
 
-                                if (!data.success) {
+                        const commentText =
+                            escapeHTML(
+                                data.data.comment
+                            );
 
 
-                                    alert(
-                                        data.error
-                                    );
+                        const time =
+                            escapeHTML(
+                                data.data.time
+                            );
 
 
-                                    return;
+                        const date =
+                            escapeHTML(
+                                data.data.date || ""
+                            );
 
 
-                                }
+                        const avatar =
+                            formatAvatar(
+                                data.data.avatar,
+                                defaultCommentAvatar
+                            );
 
 
+                        const commentHTML = `
 
-                                const noCommentMessage =
-                                    document.getElementById(
-                                        "no-comment-message"
-                                    );
-
-
-
-                                if (
-                                    noCommentMessage
-                                ) {
-
-
-                                    noCommentMessage.remove();
-
-
-                                }
-
-
-
-                                const id =
-                                    data.data.id;
-
-
-                                const username =
-                                    escapeHTML(
-                                        data.data.username
-                                    );
-
-
-                                const commentText =
-                                    escapeHTML(
-                                        data.data.comment
-                                    );
-
-
-                                const time =
-                                    escapeHTML(
-                                        data.data.time
-                                    );
-
-
-
-                                const commentHTML = `
-
-
-                            <div
-                                class="blog-comment"
+                            <li
+                                class="media blog-comment"
                                 id="comment-${id}"
-                                style="
-                                    padding: 15px 0;
-                                    border-bottom: 1px solid #ddd;
-                                "
                             >
 
-
-                                <div
-                                    class="comment-content"
+                                <a
+                                    class="pull-left"
+                                    href="#"
                                 >
 
-
-                                    <strong>
-
-
-                                        <i
-                                            class="fa fa-user"
-                                        ></i>
-
-
-                                        ${username}
-
-
-                                    </strong>
-
-
-
-                                    <span
+                                    <img
+                                        class="media-object"
+                                        src="${avatar}"
+                                        alt="${username}"
                                         style="
-                                            color: #999;
-                                            margin-left: 10px;
-                                            font-size: 12px;
+                                            width: 80px;
+                                            height: 80px;
+                                            object-fit: cover;
                                         "
                                     >
 
-
-                                        ${time}
-
-
-                                    </span>
+                                </a>
 
 
+                                <div class="media-body">
 
-                                    <p
-                                        style="
-                                            margin-top: 10px;
-                                        "
-                                    >
+                                    <ul class="sinlge-post-meta">
+
+                                        <li>
+
+                                            <i class="fa fa-user"></i>
+
+                                            ${username}
+
+                                        </li>
 
 
+                                        <li>
+
+                                            <i class="fa fa-clock-o"></i>
+
+                                            ${time}
+
+                                        </li>
+
+
+                                        ${
+                                            date
+                                                ? `
+                                                    <li>
+
+                                                        <i class="fa fa-calendar"></i>
+
+                                                        ${date}
+
+                                                    </li>
+                                                `
+                                                : ""
+                                        }
+
+                                    </ul>
+
+
+                                    <p>
                                         ${commentText}
-
-
                                     </p>
-
 
 
                                     <button
                                         type="button"
-                                        class="btn btn-link reply-button"
+                                        class="btn btn-primary reply-button"
                                         data-comment-id="${id}"
-                                        style="
-                                            padding: 0;
-                                            margin-top: 5px;
-                                        "
                                     >
 
-
-                                        <i
-                                            class="fa fa-reply"
-                                        ></i>
-
+                                        <i class="fa fa-reply"></i>
 
                                         Reply
-
 
                                     </button>
 
 
-                                </div>
-
-
-
-                                <div
-                                    class="reply-form-container"
-                                    id="reply-form-${id}"
-                                    style="
-                                        display: none;
-                                        margin-left: 40px;
-                                        margin-top: 10px;
-                                        margin-bottom: 10px;
-                                    "
-                                >
-
-
-                                    <form
-                                        class="reply-form"
-                                        data-parent-id="${id}"
+                                    <div
+                                        class="reply-form-container"
+                                        id="reply-form-${id}"
+                                        style="
+                                            display: none;
+                                            margin-top: 15px;
+                                        "
                                     >
 
-
-                                        <div
-                                            class="form-group"
+                                        <form
+                                            class="reply-form"
+                                            data-parent-id="${id}"
                                         >
 
+                                            <div class="form-group">
 
-                                            <textarea
-                                                class="form-control reply-input"
-                                                rows="2"
-                                                placeholder="Write your reply..."
-                                            ></textarea>
+                                                <textarea
+                                                    class="form-control reply-input"
+                                                    rows="3"
+                                                    placeholder="Write your reply..."
+                                                ></textarea>
 
-
-                                        </div>
-
-
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-primary btn-sm"
-                                        >
+                                            </div>
 
 
-                                            Reply
+                                            <button
+    type="submit"
+    class="btn btn-primary btn-sm reply-submit"
+>
+    Reply
+</button>
 
 
-                                        </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-default btn-sm cancel-reply"
+                                                data-comment-id="${id}"
+                                            >
+                                                Cancel
+                                            </button>
 
+                                        </form>
 
-
-                                        <button
-                                            type="button"
-                                            class="btn btn-default btn-sm cancel-reply"
-                                            data-comment-id="${id}"
-                                        >
-
-
-                                            Cancel
-
-
-                                        </button>
-
-
-                                    </form>
-
+                                    </div>
 
                                 </div>
 
 
-
-                                <div
-                                    class="reply-list"
+                                <ul
+                                    class="media-list reply-list"
                                     id="reply-list-${id}"
-                                ></div>
+                                ></ul>
 
-
-                            </div>
-
+                            </li>
 
                         `;
 
 
-
-                                commentList.insertAdjacentHTML(
-                                    "afterbegin",
-                                    commentHTML
-                                );
-
-
-
-                                commentInput.value =
-                                    "";
-
-
-                            }
-                        )
-
-
-                        .catch(
-                            function (error) {
-
-
-                                console.error(
-                                    error
-                                );
-
-
-                                alert(
-                                    "Something went wrong."
-                                );
-
-
-                            }
+                        commentList.insertAdjacentHTML(
+                            "afterbegin",
+                            commentHTML
                         );
 
 
-                }
-            );
+                        commentInput.value =
+                            "";
 
 
+                        if (responseCount) {
 
-            document.addEventListener(
-                "click",
-                function (event) {
+                            const currentCount =
+                                parseInt(
+                                    responseCount.textContent.trim()
+                                ) || 0;
 
 
-                    const replyButton =
-                        event.target.closest(
-                            ".reply-button"
+                            responseCount.textContent =
+                                currentCount + 1;
+
+                        }
+
+                    }
+                )
+
+                .catch(
+                    function (error) {
+
+                        console.error(
+                            error
                         );
 
 
-
-                    if (replyButton) {
-
-
-                        if (
-                            !isAuthenticated
-                        ) {
-
-
-                            alert(
-                                "Please login to reply."
-                            );
-
-
-                            return;
-
-
-                        }
-
-
-
-                        const commentId =
-                            replyButton.dataset.commentId;
-
-
-
-                        document
-                            .querySelectorAll(
-                                ".reply-form-container"
-                            )
-                            .forEach(
-                                function (item) {
-
-
-                                    item.style.display =
-                                        "none";
-
-
-                                }
-                            );
-
-
-
-                        const replyForm =
-                            document.getElementById(
-                                `reply-form-${commentId}`
-                            );
-
-
-
-                        if (
-                            replyForm
-                        ) {
-
-
-                            replyForm.style.display =
-                                "block";
-
-
-
-                            const input =
-                                replyForm.querySelector(
-                                    ".reply-input"
-                                );
-
-
-
-                            if (
-                                input
-                            ) {
-
-
-                                input.focus();
-
-
-                            }
-
-
-                        }
-
-
-
-                        return;
-
-
-                    }
-
-
-
-                    const cancelButton =
-                        event.target.closest(
-                            ".cancel-reply"
+                        alert(
+                            "Something went wrong."
                         );
 
-
-
-                    if (
-                        cancelButton
-                    ) {
-
-
-                        const commentId =
-                            cancelButton.dataset.commentId;
-
-
-
-                        const replyForm =
-                            document.getElementById(
-                                `reply-form-${commentId}`
-                            );
-
-
-
-                        if (
-                            replyForm
-                        ) {
-
-
-                            replyForm.style.display =
-                                "none";
-
-
-
-                            const input =
-                                replyForm.querySelector(
-                                    ".reply-input"
-                                );
-
-
-
-                            if (
-                                input
-                            ) {
-
-
-                                input.value =
-                                    "";
-
-
-                            }
-
-
-                        }
-
-
                     }
+                );
 
-
-                }
-            );
-
-
-
-            document.addEventListener(
-                "submit",
-                function (event) {
-
-
-                    const form =
-                        event.target;
+            }
+        );
 
 
 
-                    if (
-                        !form.classList.contains(
-                            "reply-form"
-                        )
-                    ) {
+        document.addEventListener(
+            "click",
+            function (event) {
+
+                const replyButton =
+                    event.target.closest(
+                        ".reply-button"
+                    );
 
 
-                        return;
+                if (replyButton) {
 
-
-                    }
-
-
-
-                    event.preventDefault();
-
-
-
-                    if (
-                        !isAuthenticated
-                    ) {
-
+                    if (!isAuthenticated) {
 
                         alert(
                             "Please login to reply."
                         );
 
-
                         return;
-
 
                     }
 
 
-
-                    const parentId =
-                        form.dataset.parentId;
-
+                    const commentId =
+                        replyButton.dataset.commentId;
 
 
-                    const input =
-                        form.querySelector(
-                            ".reply-input"
+                    document
+                        .querySelectorAll(
+                            ".reply-form-container"
+                        )
+                        .forEach(
+                            function (item) {
+
+                                item.style.display =
+                                    "none";
+
+                            }
                         );
 
 
-
-                    const comment =
-                        input.value.trim();
-
+                    const replyFormContainer =
+                        document.getElementById(
+                            `reply-form-${commentId}`
+                        );
 
 
                     if (
-                        comment === ""
+                        replyFormContainer
                     ) {
 
-
-                        alert(
-                            "Please enter your reply."
-                        );
+                        replyFormContainer.style.display =
+                            "block";
 
 
-                        return;
+                        const input =
+                            replyFormContainer.querySelector(
+                                ".reply-input"
+                            );
 
+
+                        if (input) {
+                            input.focus();
+                        }
 
                     }
 
 
+                    return;
 
-                    fetch(
-                        commentUrl,
-                        {
-
-
-                            method: "POST",
+                }
 
 
-                            headers: {
+
+                const cancelButton =
+                    event.target.closest(
+                        ".cancel-reply"
+                    );
 
 
-                                "Content-Type":
-                                    "application/x-www-form-urlencoded",
+                if (cancelButton) {
+
+                    const commentId =
+                        cancelButton.dataset.commentId;
 
 
-                                "X-CSRFToken":
-                                    "{{ csrf_token }}"
+                    const replyFormContainer =
+                        document.getElementById(
+                            `reply-form-${commentId}`
+                        );
 
 
-                            },
+                    if (
+                        replyFormContainer
+                    ) {
+
+                        replyFormContainer.style.display =
+                            "none";
 
 
-                            body:
-                                new URLSearchParams({
+                        const input =
+                            replyFormContainer.querySelector(
+                                ".reply-input"
+                            );
 
 
-                                    "comment":
-                                        comment,
+                        if (input) {
+                            input.value = "";
+                        }
+
+                    }
+
+                }
+
+            }
+        );
 
 
-                                    "parent_id":
-                                        parentId
+
+        document.addEventListener(
+            "submit",
+            function (event) {
+
+                const form =
+                    event.target;
 
 
-                                })
+                if (
+                    !form.classList.contains(
+                        "reply-form"
+                    )
+                ) {
 
+                    return;
+
+                }
+
+
+                event.preventDefault();
+
+
+                if (!isAuthenticated) {
+
+                    alert(
+                        "Please login to reply."
+                    );
+
+                    return;
+
+                }
+
+
+                const parentId =
+                    form.dataset.parentId;
+
+
+                const input =
+                    form.querySelector(
+                        ".reply-input"
+                    );
+
+
+                const comment =
+                    input.value.trim();
+
+
+                if (comment === "") {
+
+                    alert(
+                        "Please enter your reply."
+                    );
+
+                    return;
+
+                }
+
+
+                fetch(
+                    commentUrl,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/x-www-form-urlencoded",
+
+                            "X-CSRFToken":
+                                csrfToken
+
+                        },
+
+                        body:
+                            new URLSearchParams({
+
+                                comment:
+                                    comment,
+
+                                parent_id:
+                                    parentId
+
+                            })
+
+                    }
+                )
+
+                .then(
+                    function (response) {
+
+                        return response.json();
+
+                    }
+                )
+
+                .then(
+                    function (data) {
+
+                        if (!data.success) {
+
+                            alert(
+                                data.error ||
+                                "Unable to add reply."
+                            );
+
+                            return;
 
                         }
-                    )
 
 
-                        .then(
-                            function (response) {
+                        const id =
+                            data.data.id;
 
 
-                                return response.json();
+                        const username =
+                            escapeHTML(
+                                data.data.username
+                            );
 
 
-                            }
-                        )
+                        const commentText =
+                            escapeHTML(
+                                data.data.comment
+                            );
 
 
-                        .then(
-                            function (data) {
+                        const time =
+                            escapeHTML(
+                                data.data.time
+                            );
 
 
-                                if (
-                                    !data.success
-                                ) {
+                        const date =
+                            escapeHTML(
+                                data.data.date || ""
+                            );
 
 
-                                    alert(
-                                        data.error
-                                    );
+                        const avatar =
+                            formatAvatar(
+                                data.data.avatar,
+                                defaultReplyAvatar
+                            );
 
 
-                                    return;
+                        const replyHTML = `
 
-
-                                }
-
-
-
-                                const id =
-                                    data.data.id;
-
-
-                                const username =
-                                    escapeHTML(
-                                        data.data.username
-                                    );
-
-
-                                const commentText =
-                                    escapeHTML(
-                                        data.data.comment
-                                    );
-
-
-                                const time =
-                                    escapeHTML(
-                                        data.data.time
-                                    );
-
-
-
-                                const replyHTML = `
-
-
-                            <div
-                                class="blog-reply"
+                            <li
+                                class="media second-media blog-reply"
                                 id="comment-${id}"
-                                style="
-                                    margin-left: 40px;
-                                    margin-top: 15px;
-                                    padding-left: 15px;
-                                    border-left: 2px solid #ddd;
-                                "
                             >
 
-
-                                <strong>
-
-
-                                    <i
-                                        class="fa fa-user"
-                                    ></i>
-
-
-                                    ${username}
-
-
-                                </strong>
-
-
-
-                                <span
-                                    style="
-                                        color: #999;
-                                        margin-left: 10px;
-                                        font-size: 12px;
-                                    "
+                                <a
+                                    class="pull-left"
+                                    href="#"
                                 >
 
+                                    <img
+                                        class="media-object"
+                                        src="${avatar}"
+                                        alt="${username}"
+                                        style="
+                                            width: 80px;
+                                            height: 80px;
+                                            object-fit: cover;
+                                        "
+                                    >
 
-                                    ${time}
-
-
-                                </span>
-
-
-
-                                <p
-                                    style="
-                                        margin-top: 8px;
-                                    "
-                                >
-
-
-                                    ${commentText}
+                                </a>
 
 
-                                </p>
+                                <div class="media-body">
+
+                                    <ul class="sinlge-post-meta">
+
+                                        <li>
+
+                                            <i class="fa fa-user"></i>
+
+                                            ${username}
+
+                                        </li>
 
 
-                            </div>
+                                        <li>
 
+                                            <i class="fa fa-clock-o"></i>
+
+                                            ${time}
+
+                                        </li>
+
+
+                                        ${
+                                            date
+                                                ? `
+                                                    <li>
+
+                                                        <i class="fa fa-calendar"></i>
+
+                                                        ${date}
+
+                                                    </li>
+                                                `
+                                                : ""
+                                        }
+
+                                    </ul>
+
+
+                                    <p>
+                                        ${commentText}
+                                    </p>
+
+                                </div>
+
+                            </li>
 
                         `;
 
 
-
-                                const replyList =
-                                    document.getElementById(
-                                        `reply-list-${parentId}`
-                                    );
-
+                        const replyList =
+                            document.getElementById(
+                                `reply-list-${parentId}`
+                            );
 
 
-                                if (
-                                    replyList
-                                ) {
+                        if (replyList) {
+
+                            replyList.insertAdjacentHTML(
+                                "beforeend",
+                                replyHTML
+                            );
+
+                        }
 
 
-                                    replyList.insertAdjacentHTML(
-                                        "beforeend",
-                                        replyHTML
-                                    );
+                        input.value =
+                            "";
 
 
-                                }
+                        const replyFormContainer =
+                            document.getElementById(
+                                `reply-form-${parentId}`
+                            );
 
 
+                        if (
+                            replyFormContainer
+                        ) {
 
-                                input.value =
-                                    "";
+                            replyFormContainer.style.display =
+                                "none";
 
+                        }
 
+                    }
+                )
 
-                                const replyForm =
-                                    document.getElementById(
-                                        `reply-form-${parentId}`
-                                    );
+                .catch(
+                    function (error) {
 
-
-
-                                if (
-                                    replyForm
-                                ) {
-
-
-                                    replyForm.style.display =
-                                        "none";
-
-
-                                }
-
-
-                            }
-                        )
-
-
-                        .catch(
-                            function (error) {
-
-
-                                console.error(
-                                    error
-                                );
-
-
-                                alert(
-                                    "Something went wrong."
-                                );
-
-
-                            }
+                        console.error(
+                            error
                         );
 
 
-                }
-            );
+                        alert(
+                            "Something went wrong."
+                        );
 
+                    }
+                );
 
-        }
-    );
+            }
+        );
 
+    }
+);
 
 </script>
-
 
 {% endblock %}

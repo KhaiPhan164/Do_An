@@ -2196,8 +2196,8 @@ textarea {
     background: #FE980F
 }
 
-.media-list .btn-primary,
-.commnets .btn-primary {
+.media-list .reply-primary,
+.commnets .reply-primary {
     background: #FC9A11;
     border: 0 none;
     border-radius: 0;
@@ -2457,4 +2457,38 @@ textarea {
 }
 .through {
     text-decoration: line-through;
+}
+
+.reply-form .reply-submit {
+    float: none !important;
+    display: inline-block !important;
+
+    margin: 0 !important;
+    padding: 5px 10px !important;
+
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+
+    text-transform: none !important;
+
+    background: #FE980F !important;
+    color: #FFFFFF !important;
+
+    border: 1px solid #FE980F !important;
+    border-radius: 3px !important;
+
+    vertical-align: middle !important;
+}
+
+.reply-form .cancel-reply {
+    float: none !important;
+    display: inline-block !important;
+
+    margin: 0 0 0 5px !important;
+    padding: 5px 10px !important;
+
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+
+    vertical-align: middle !important;
 }
