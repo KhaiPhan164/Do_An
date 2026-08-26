@@ -8,6 +8,11 @@ urlpatterns = [
 
     path('account/my-product/', views.my_product, name='my_product'),
     path('account/add-product/', views.add_product, name='add_product'),
+     path(
+        'addAjax/',
+        views.add_product_ajax,
+        name='add_product_ajax'
+    ),
     path('account/edit-product/<int:product_id>/', views.edit_product, name='edit_product'),
     path('account/delete-product/<int:product_id>/', views.delete_product, name='delete_product'),
 

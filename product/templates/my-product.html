@@ -8,9 +8,7 @@ My Product
 
 {% block content %}
 
-
 <div class="row">
-
 
     <div class="col-sm-3">
 
@@ -21,41 +19,33 @@ My Product
 
     <div class="col-sm-9">
 
+        <div class="table-responsive cart_info">
 
-        <div class="table-responsive">
-
-
-            <table class="table table-bordered">
-
+            <table class="table table-condensed">
 
                 <thead>
 
-                    <tr
-                        style="
-                            background: #FE980F;
-                            color: white;
-                        "
-                    >
+                    <tr class="cart_menu">
 
-                        <th>
+                        <td class="description">
                             Id
-                        </th>
+                        </td>
 
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
+                        <td class="image">
                             Image
-                        </th>
+                        </td>
 
-                        <th>
+                        <td class="description">
+                            Name
+                        </td>
+
+                        <td class="price">
                             Price
-                        </th>
+                        </td>
 
-                        <th>
+                        <td class="total">
                             Action
-                        </th>
+                        </td>
 
                     </tr>
 
@@ -64,34 +54,26 @@ My Product
 
                 <tbody>
 
-
                     {% for product in products %}
-
 
                     <tr>
 
+                        <td class="cart_description">
 
-                        <td>
-
-                            {{ product.id }}
-
-                        </td>
-
-
-                        <td>
-
-                            {{ product.name }}
+                            <p>
+                                {{ product.id }}
+                            </p>
 
                         </td>
 
 
-                        <td>
-
+                        <td class="cart_product">
 
                             {% if product.image %}
 
                                 <img
-                                    src="/media/{{ product.image }}"
+                                    src="{{ product.image }}"
+                                    alt="{{ product.name }}"
                                     width="60"
                                     height="60"
                                     style="object-fit: cover;"
@@ -103,19 +85,28 @@ My Product
 
                             {% endif %}
 
+                        </td>
+
+
+                        <td class="cart_description">
+
+                            <h4>
+                                {{ product.name }}
+                            </h4>
 
                         </td>
 
 
-                        <td>
+                        <td class="cart_price">
 
-                            ${{ product.price }}
+                            <p>
+                                ${{ product.price }}
+                            </p>
 
                         </td>
 
 
-                        <td>
-
+                        <td class="cart_total">
 
                             <a
                                 href="{% url 'product:edit_product' product.id %}"
@@ -139,15 +130,12 @@ My Product
 
                             </a>
 
-
                         </td>
-
 
                     </tr>
 
 
                     {% empty %}
-
 
                     <tr>
 
@@ -163,15 +151,11 @@ My Product
 
                     </tr>
 
-
                     {% endfor %}
-
 
                 </tbody>
 
-
             </table>
-
 
         </div>
 
@@ -193,11 +177,8 @@ My Product
 
         </div>
 
-
     </div>
 
-
 </div>
-
 
 {% endblock %}

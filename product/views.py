@@ -1,8 +1,9 @@
 from decimal import Decimal
 import json
 import os
-
+from PIL import Image
 from django.contrib import messages
+from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.core.files.storage import default_storage
 from django.core.mail import EmailMultiAlternatives
@@ -23,6 +24,11 @@ User = get_user_model()
 
 
 def validate_images(images):
+
+
+    if not images:
+        return 'Phải chọn ít nhất một hình.'
+
     if len(images) > 3:
         return 'Chỉ được upload tối đa 3 hình.'
 
@@ -42,24 +48,101 @@ def validate_images(images):
         if extension not in allowed_extensions:
             return 'File upload phải là hình ảnh.'
 
-        if image.size > 1024 * 1024:
-            return 'Mỗi hình phải có dung lượng nhỏ hơn 1MB.'
+        if image.size > 2048 * 2048:
+            return 'Mỗi hình phải có dung lượng nhỏ hơn 2MB.'
 
     return None
 
 
 def save_images(images):
-    image_filenames = []
+
+    saved_filenames = []
+
+    save_folder = os.path.join(
+        settings.MEDIA_ROOT,
+        'products'
+    )
+
+    os.makedirs(
+        save_folder,
+        exist_ok=True
+    )
+
 
     for image in images:
-        filename = default_storage.save(
-            'product_images/' + image.name,
-            image
+
+        filename = image.name.replace(
+            ' ',
+            '_'
         )
 
-        image_filenames.append(filename)
+        base, ext = os.path.splitext(
+            filename
+        )
 
-    return image_filenames
+        ext = ext.lower()
+
+
+        original_name = (
+            f'{base}{ext}'
+        )
+
+        original_path = os.path.join(
+            save_folder,
+            original_name
+        )
+
+
+        with open(
+            original_path,
+            'wb+'
+        ) as destination:
+
+            for chunk in image.chunks():
+                destination.write(
+                    chunk
+                )
+
+
+        saved_filenames.append(
+            f'products/{original_name}'
+        )
+
+
+        img = Image.open(
+            original_path
+        )
+
+
+        for size in [
+            100,
+            200
+        ]:
+
+            img_copy = img.copy()
+
+            img_copy.thumbnail(
+                (
+                    size,
+                    size
+                )
+            )
+
+            resized_name = (
+                f'{size}_{base}{ext}'
+            )
+
+            resized_path = os.path.join(
+                save_folder,
+                resized_name
+            )
+
+            img_copy.save(
+                resized_path
+            )
+
+
+    return saved_filenames
 
 
 def get_image_filenames(product):
@@ -256,98 +339,9 @@ def my_product(request):
 
 @non_superuser_required
 def add_product(request):
+
     categories = Category.objects.all()
     brands = Brand.objects.all()
-
-    error = None
-
-    if request.method == 'POST':
-        name = request.POST.get(
-            'name',
-            ''
-        ).strip()
-
-        price = request.POST.get(
-            'price'
-        )
-
-        category_id = request.POST.get(
-            'category'
-        )
-
-        brand_id = request.POST.get(
-            'brand'
-        )
-
-        status = request.POST.get(
-            'status',
-            '0'
-        )
-
-        sale = request.POST.get(
-            'sale',
-            '0'
-        )
-
-        company = request.POST.get(
-            'company',
-            ''
-        )
-
-        detail = request.POST.get(
-            'detail',
-            ''
-        )
-
-        images = request.FILES.getlist(
-            'images'
-        )
-
-        error = validate_images(images)
-
-        if not name:
-            error = 'Vui lòng nhập tên sản phẩm.'
-
-        elif not price:
-            error = 'Vui lòng nhập giá sản phẩm.'
-
-        elif not category_id:
-            error = 'Vui lòng chọn category.'
-
-        elif not brand_id:
-            error = 'Vui lòng chọn brand.'
-
-        if not error:
-            status = int(status)
-
-            if status == 0:
-                sale = 0
-
-            elif not sale:
-                sale = 0
-
-            image_filenames = save_images(
-                images
-            )
-
-            Product.objects.create(
-                user=request.user,
-                name=name,
-                price=price,
-                category_id=category_id,
-                brand_id=brand_id,
-                status=status,
-                sale=sale,
-                company=company,
-                images=json.dumps(
-                    image_filenames
-                ),
-                detail=detail
-            )
-
-            return redirect(
-                'product:my_product'
-            )
 
     cart = get_cart(request)
 
@@ -357,11 +351,234 @@ def add_product(request):
         {
             'categories': categories,
             'brands': brands,
-            'error': error,
             'cart_count': get_cart_count(cart),
         }
     )
 
+@non_superuser_required
+@require_POST
+def add_product_ajax(request):
+
+    name = request.POST.get(
+        'name',
+        ''
+    ).strip()
+
+    price = request.POST.get(
+        'price',
+        ''
+    ).strip()
+
+    category_id = request.POST.get(
+        'category',
+        ''
+    )
+
+    brand_id = request.POST.get(
+        'brand',
+        ''
+    )
+
+    status = request.POST.get(
+        'status',
+        '0'
+    )
+
+    sale = request.POST.get(
+        'sale',
+        '0'
+    )
+
+    company = request.POST.get(
+        'company',
+        ''
+    ).strip()
+
+    detail = request.POST.get(
+        'detail',
+        ''
+    ).strip()
+
+    images = request.FILES.getlist(
+        'images'
+    )
+
+
+    errors = {}
+
+
+    if not name:
+        errors['name'] = (
+            'Tên sản phẩm không được để trống.'
+        )
+
+
+    if not price:
+
+        errors['price'] = (
+            'Giá không được để trống.'
+        )
+
+    else:
+
+        try:
+
+            price = Decimal(
+                price
+            )
+
+            if price < 0:
+
+                errors['price'] = (
+                    'Giá phải lớn hơn hoặc bằng 0.'
+                )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            errors['price'] = (
+                'Giá không hợp lệ.'
+            )
+
+
+    if not category_id:
+
+        errors['category'] = (
+            'Vui lòng chọn category.'
+        )
+
+
+    if not brand_id:
+
+        errors['brand'] = (
+            'Vui lòng chọn brand.'
+        )
+
+
+    image_error = validate_images(
+        images
+    )
+
+    if image_error:
+
+        errors['images'] = (
+            image_error
+        )
+
+
+    try:
+
+        status = int(
+            status
+        )
+
+    except (
+        ValueError,
+        TypeError
+    ):
+
+        status = 0
+
+
+    if status == 0:
+
+        sale = Decimal(
+            '0'
+        )
+
+    else:
+
+        try:
+
+            sale = Decimal(
+                sale or '0'
+            )
+
+            if sale < 0:
+
+                errors['sale'] = (
+                    'Giá sale không hợp lệ.'
+                )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            errors['sale'] = (
+                'Giá sale không hợp lệ.'
+            )
+
+
+    if errors:
+
+        return JsonResponse(
+            {
+                'status': 'error',
+                'errors': errors,
+            },
+            status=400
+        )
+
+
+    try:
+
+        image_filenames = save_images(
+            images
+        )
+
+
+        product = Product.objects.create(
+
+            user=request.user,
+
+            name=name,
+
+            price=price,
+
+            category_id=category_id,
+
+            brand_id=brand_id,
+
+            status=status,
+
+            sale=sale,
+
+            company=company,
+
+            images=json.dumps(
+                image_filenames
+            ),
+
+            detail=detail
+
+        )
+
+
+        return JsonResponse(
+            {
+                'status': 'success',
+                'message': (
+                    'Thêm sản phẩm thành công.'
+                ),
+                'product_id': product.id,
+            }
+        )
+
+
+    except Exception as e:
+
+        return JsonResponse(
+            {
+                'status': 'error',
+                'errors': {
+                    'general': str(e)
+                },
+            },
+            status=500
+        )
 
 @non_superuser_required
 def edit_product(
@@ -603,6 +820,8 @@ def home(request):
             'min_price': min_price,
             'max_price': max_price,
             'cart_count': get_cart_count(cart),
+
+            'show_price_range': True,
         }
     )
 

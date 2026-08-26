@@ -34,24 +34,16 @@ Add Product
             {% endif %}
 
 
-            <form
-                method="POST"
-                enctype="multipart/form-data"
-            >
+            <form id="productAjax" method="POST" enctype="multipart/form-data">
 
                 {% csrf_token %}
 
 
                 <div class="form-group">
 
-                    <input
-                        type="text"
-                        name="name"
-                        class="form-control"
-                        placeholder="Name"
-                        value="{{ request.POST.name }}"
-                        required
-                    >
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Name" required>
+
+                    <p id="error-name" class="text-danger"></p>
 
                 </div>
 
@@ -59,76 +51,89 @@ Add Product
                 <div class="form-group">
 
                     <input
-                        type="number"
-                        name="price"
-                        class="form-control"
-                        placeholder="Price"
-                        step="0.01"
-                        min="0"
-                        value="{{ request.POST.price }}"
-                        required
-                    >
+        type="number"
+        name="price"
+        id="price"
+        class="form-control"
+        placeholder="Price"
+        step="0.01"
+        min="0"
+        required
+    >
+
+    <p
+        id="error-price"
+        class="text-danger"
+    ></p>
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <select
-                        name="category"
-                        class="form-control"
-                        required
-                    >
+                     <select
+        name="category"
+        id="category"
+        class="form-control"
+        required
+    >
 
-                        <option value="">
-                            Please choose category
-                        </option>
+        <option value="">
+            Please choose category
+        </option>
 
-                        {% for category in categories %}
+        {% for category in categories %}
 
-                        <option value="{{ category.id }}">
-                            {{ category.name }}
-                        </option>
+        <option value="{{ category.id }}">
+            {{ category.name }}
+        </option>
 
-                        {% endfor %}
+        {% endfor %}
 
-                    </select>
+    </select>
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <select
-                        name="brand"
-                        class="form-control"
-                        required
-                    >
-
-                        <option value="">
-                            Please choose brand
-                        </option>
-
-                        {% for brand in brands %}
-
-                        <option value="{{ brand.id }}">
-                            {{ brand.name }}
-                        </option>
-
-                        {% endfor %}
-
-                    </select>
+    <p
+        id="error-category"
+        class="text-danger"
+    ></p>
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <select
-                        name="status"
-                        id="status"
-                        class="form-control"
-                    >
+                     <select
+        name="brand"
+        id="brand"
+        class="form-control"
+        required
+    >
+
+        <option value="">
+            Please choose brand
+        </option>
+
+        {% for brand in brands %}
+
+        <option value="{{ brand.id }}">
+            {{ brand.name }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <p
+        id="error-brand"
+        class="text-danger"
+    ></p>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <select name="status" id="status" class="form-control">
 
                         <option value="0">
                             New
@@ -143,72 +148,55 @@ Add Product
                 </div>
 
 
-                <div
-                    class="form-group"
-                    id="sale-box"
-                    style="display: none;"
-                >
+                <div class="form-group" id="sale-box" style="display: none;">
 
-                    <input
-                        type="number"
-                        name="sale"
-                        class="form-control"
-                        placeholder="Sale"
-                        min="0"
-                        step="0.01"
-                        value="0"
-                    >
+                    <input type="number" name="sale" class="form-control" placeholder="Sale" min="0" step="0.01"
+                        value="0">
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <input
-                        type="text"
-                        name="company"
-                        class="form-control"
-                        placeholder="Company profile"
-                        value="{{ request.POST.company }}"
-                    >
+                    <input type="text" name="company" class="form-control" placeholder="Company profile"
+                        value="{{ request.POST.company }}">
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <input
-                        type="file"
-                        name="images"
-                        id="images"
-                        class="form-control"
-                        accept="image/*"
-                        multiple
-                    >
+                     <input
+        type="file"
+        name="images"
+        id="images"
+        class="form-control"
+        accept="image/*"
+        multiple
+    >
 
-                    <small>
-                        Upload tối đa 3 hình, mỗi hình nhỏ hơn 1MB.
-                    </small>
+    <small>
+        Upload tối đa 3 hình,
+        mỗi hình nhỏ hơn 2MB.
+    </small>
+
+    <p
+        id="error-images"
+        class="text-danger"
+    ></p>
 
                 </div>
 
 
                 <div class="form-group">
 
-                    <textarea
-                        name="detail"
-                        class="form-control"
-                        rows="6"
-                        placeholder="Detail"
-                    >{{ request.POST.detail }}</textarea>
+                    <textarea name="detail" class="form-control" rows="6"
+                        placeholder="Detail">{{ request.POST.detail }}</textarea>
 
                 </div>
 
 
-                <button
-                    type="submit"
-                    class="btn btn-default"
-                >
+                <button type="submit" class="btn btn-default">
                     Add Product
                 </button>
 
@@ -222,102 +210,298 @@ Add Product
 
 {% endblock %}
 
-
 {% block extra_js %}
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
 
-    const status = document.getElementById("status");
-    const saleBox = document.getElementById("sale-box");
-    const images = document.getElementById("images");
-
-
-    function checkSale() {
-
-        if (status.value === "1") {
-
-            saleBox.style.display = "block";
-
-        } else {
-
-            saleBox.style.display = "none";
-
-            const saleInput = saleBox.querySelector(
-                'input[name="sale"]'
+        const form =
+            document.getElementById(
+                'productAjax'
             );
 
-            saleInput.value = 0;
+        const status =
+            document.getElementById(
+                'status'
+            );
+
+        const saleBox =
+            document.getElementById(
+                'sale-box'
+            );
+
+        const images =
+            document.getElementById(
+                'images'
+            );
+
+
+        function checkSale() {
+
+            if (
+                status.value === '1'
+            ) {
+
+                saleBox.style.display =
+                    'block';
+
+            } else {
+
+                saleBox.style.display =
+                    'none';
+
+                const saleInput =
+                    saleBox.querySelector(
+                        'input[name="sale"]'
+                    );
+
+                saleInput.value = 0;
+
+            }
 
         }
 
-    }
+
+        status.addEventListener(
+            'change',
+            checkSale
+        );
 
 
-    status.addEventListener(
-        "change",
-        checkSale
-    );
+        images.addEventListener(
+            'change',
+            function () {
+
+                if (
+                    this.files.length > 3
+                ) {
+
+                    alert(
+                        'Chỉ được chọn tối đa 3 hình.'
+                    );
+
+                    this.value = '';
+
+                    return;
+
+                }
 
 
-    images.addEventListener(
-        "change",
-        function () {
+                for (
+                    let i = 0;
+                    i < this.files.length;
+                    i++
+                ) {
 
-            if (this.files.length > 3) {
+                    const file =
+                        this.files[i];
 
-                alert(
-                    "Chỉ được chọn tối đa 3 hình."
+
+                    if (
+                        !file.type.startsWith(
+                            'image/'
+                        )
+                    ) {
+
+                        alert(
+                            file.name +
+                            ' không phải hình ảnh.'
+                        );
+
+                        this.value = '';
+
+                        return;
+
+                    }
+
+
+                    if (
+                        file.size >
+                        2 * 1024 * 1024
+                    ) {
+
+                        alert(
+                            file.name +
+                            ' lớn hơn 2MB.'
+                        );
+
+                        this.value = '';
+
+                        return;
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        form.addEventListener(
+            'submit',
+            function (event) {
+
+                event.preventDefault();
+
+
+                document
+                    .querySelectorAll(
+                        '[id^="error-"]'
+                    )
+                    .forEach(
+                        function (item) {
+
+                            item.textContent = '';
+
+                        }
+                    );
+
+
+                const formData =
+                    new FormData(
+                        form
+                    );
+
+
+                const submitButton =
+                    form.querySelector(
+                        'button[type="submit"]'
+                    );
+
+
+                submitButton.disabled =
+                    true;
+
+
+                fetch(
+                    "{% url 'product:add_product_ajax' %}",
+                    {
+
+                        method: 'POST',
+
+                        body: formData,
+
+                        credentials:
+                            'same-origin'
+
+                    }
+                )
+
+                .then(
+                    async function (
+                        response
+                    ) {
+
+                        const data =
+                            await response.json();
+
+
+                        if (
+                            !response.ok
+                        ) {
+
+                            throw data;
+
+                        }
+
+
+                        return data;
+
+                    }
+                )
+
+                .then(
+                    function (data) {
+
+                        if (
+                            data.status ===
+                            'success'
+                        ) {
+
+                            window.location.href =
+                                "{% url 'product:my_product' %}";
+
+                        }
+
+                    }
+                )
+
+                .catch(
+                    function (data) {
+
+                        if (
+                            data.errors
+                        ) {
+
+                            Object
+                                .keys(
+                                    data.errors
+                                )
+                                .forEach(
+                                    function (
+                                        field
+                                    ) {
+
+                                        const errorElement =
+                                            document.getElementById(
+                                                'error-' +
+                                                field
+                                            );
+
+
+                                        if (
+                                            errorElement
+                                        ) {
+
+                                            errorElement.textContent =
+                                                data.errors[
+                                                    field
+                                                ];
+
+                                        } else {
+
+                                            alert(
+                                                data.errors[
+                                                    field
+                                                ]
+                                            );
+
+                                        }
+
+                                    }
+                                );
+
+                        } else {
+
+                            alert(
+                                'Có lỗi xảy ra.'
+                            );
+
+                        }
+
+                    }
+                )
+
+                .finally(
+                    function () {
+
+                        submitButton.disabled =
+                            false;
+
+                    }
                 );
 
-                this.value = "";
-
-                return;
-
             }
+        );
 
 
-            for (let i = 0; i < this.files.length; i++) {
+        checkSale();
 
-                const file = this.files[i];
-
-
-                if (!file.type.startsWith("image/")) {
-
-                    alert(
-                        "File upload phải là hình ảnh."
-                    );
-
-                    this.value = "";
-
-                    return;
-
-                }
-
-
-                if (file.size > 1024 * 1024) {
-
-                    alert(
-                        file.name +
-                        " có dung lượng lớn hơn 1MB."
-                    );
-
-                    this.value = "";
-
-                    return;
-
-                }
-
-            }
-
-        }
-    );
-
-
-    checkSale();
-
-});
+    }
+);
 
 </script>
 
