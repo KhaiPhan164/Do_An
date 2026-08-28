@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import json
 import os
 from PIL import Image
@@ -23,10 +23,12 @@ from users.models import Product, Category, Brand, History
 User = get_user_model()
 
 
-def validate_images(images):
+def validate_images(
+    images,
+    required=True
+):
 
-
-    if not images:
+    if required and not images:
         return 'Phải chọn ít nhất một hình.'
 
     if len(images) > 3:
@@ -40,7 +42,10 @@ def validate_images(images):
         '.webp',
     ]
 
+    max_size = 2 * 1024 * 1024
+
     for image in images:
+
         extension = os.path.splitext(
             image.name
         )[1].lower()
@@ -48,7 +53,7 @@ def validate_images(images):
         if extension not in allowed_extensions:
             return 'File upload phải là hình ảnh.'
 
-        if image.size > 2048 * 2048:
+        if image.size > max_size:
             return 'Mỗi hình phải có dung lượng nhỏ hơn 2MB.'
 
     return None
@@ -359,106 +364,21 @@ def add_product(request):
 @require_POST
 def add_product_ajax(request):
 
-    name = request.POST.get(
-        'name',
-        ''
-    ).strip()
-
-    price = request.POST.get(
-        'price',
-        ''
-    ).strip()
-
-    category_id = request.POST.get(
-        'category',
-        ''
+    data = get_product_form_data(
+        request
     )
-
-    brand_id = request.POST.get(
-        'brand',
-        ''
-    )
-
-    status = request.POST.get(
-        'status',
-        '0'
-    )
-
-    sale = request.POST.get(
-        'sale',
-        '0'
-    )
-
-    company = request.POST.get(
-        'company',
-        ''
-    ).strip()
-
-    detail = request.POST.get(
-        'detail',
-        ''
-    ).strip()
 
     images = request.FILES.getlist(
         'images'
     )
 
-
-    errors = {}
-
-
-    if not name:
-        errors['name'] = (
-            'Tên sản phẩm không được để trống.'
-        )
-
-
-    if not price:
-
-        errors['price'] = (
-            'Giá không được để trống.'
-        )
-
-    else:
-
-        try:
-
-            price = Decimal(
-                price
-            )
-
-            if price < 0:
-
-                errors['price'] = (
-                    'Giá phải lớn hơn hoặc bằng 0.'
-                )
-
-        except (
-            ValueError,
-            TypeError
-        ):
-
-            errors['price'] = (
-                'Giá không hợp lệ.'
-            )
-
-
-    if not category_id:
-
-        errors['category'] = (
-            'Vui lòng chọn category.'
-        )
-
-
-    if not brand_id:
-
-        errors['brand'] = (
-            'Vui lòng chọn brand.'
-        )
-
+    errors = validate_product_data(
+        data
+    )
 
     image_error = validate_images(
-        images
+        images,
+        required=True
     )
 
     if image_error:
@@ -466,50 +386,6 @@ def add_product_ajax(request):
         errors['images'] = (
             image_error
         )
-
-
-    try:
-
-        status = int(
-            status
-        )
-
-    except (
-        ValueError,
-        TypeError
-    ):
-
-        status = 0
-
-
-    if status == 0:
-
-        sale = Decimal(
-            '0'
-        )
-
-    else:
-
-        try:
-
-            sale = Decimal(
-                sale or '0'
-            )
-
-            if sale < 0:
-
-                errors['sale'] = (
-                    'Giá sale không hợp lệ.'
-                )
-
-        except (
-            ValueError,
-            TypeError
-        ):
-
-            errors['sale'] = (
-                'Giá sale không hợp lệ.'
-            )
 
 
     if errors:
@@ -523,6 +399,9 @@ def add_product_ajax(request):
         )
 
 
+    image_filenames = []
+
+
     try:
 
         image_filenames = save_images(
@@ -530,31 +409,23 @@ def add_product_ajax(request):
         )
 
 
-        product = Product.objects.create(
-
-            user=request.user,
-
-            name=name,
-
-            price=price,
-
-            category_id=category_id,
-
-            brand_id=brand_id,
-
-            status=status,
-
-            sale=sale,
-
-            company=company,
-
-            images=json.dumps(
-                image_filenames
-            ),
-
-            detail=detail
-
+        product = Product(
+            user=request.user
         )
+
+
+        set_product_data(
+            product,
+            data
+        )
+
+
+        product.images = json.dumps(
+            image_filenames
+        )
+
+
+        product.save()
 
 
         return JsonResponse(
@@ -573,6 +444,7 @@ def add_product_ajax(request):
         return JsonResponse(
             {
                 'status': 'error',
+
                 'errors': {
                     'general': str(e)
                 },
@@ -585,66 +457,59 @@ def edit_product(
     request,
     product_id
 ):
+
     product = get_object_or_404(
         Product,
         id=product_id,
         user=request.user
     )
 
+
     categories = Category.objects.all()
+
     brands = Brand.objects.all()
+
 
     old_images = get_image_filenames(
         product
     )
 
+
     error = None
 
+
     if request.method == 'POST':
-        name = request.POST.get(
-            'name',
-            ''
-        ).strip()
 
-        price = request.POST.get(
-            'price'
+        data = get_product_form_data(
+            request
         )
 
-        category_id = request.POST.get(
-            'category'
+
+        errors = validate_product_data(
+            data
         )
 
-        brand_id = request.POST.get(
-            'brand'
+
+        delete_images = (
+            request.POST.getlist(
+                'delete_images'
+            )
         )
 
-        status = request.POST.get(
-            'status',
-            '0'
+
+        delete_images = [
+            image
+            for image in delete_images
+            if image in old_images
+        ]
+
+
+        new_images = (
+            request.FILES.getlist(
+                'images'
+            )
         )
 
-        sale = request.POST.get(
-            'sale',
-            '0'
-        )
-
-        company = request.POST.get(
-            'company',
-            ''
-        )
-
-        detail = request.POST.get(
-            'detail',
-            ''
-        )
-
-        delete_images = request.POST.getlist(
-            'delete_images'
-        )
-
-        new_images = request.FILES.getlist(
-            'images'
-        )
 
         remaining_images = [
             image
@@ -652,108 +517,163 @@ def edit_product(
             if image not in delete_images
         ]
 
+
         total_images = (
             len(remaining_images)
-            + len(new_images)
+            +
+            len(new_images)
         )
 
-        if total_images > 3:
-            error = (
+
+        if total_images == 0:
+
+            errors['images'] = (
+                'Sản phẩm phải có ít nhất một hình.'
+            )
+
+
+        elif total_images > 3:
+
+            errors['images'] = (
                 'Tổng số hình sau khi cập nhật '
                 'không được vượt quá 3 hình.'
             )
 
-        if not error:
-            error = validate_images(
-                new_images
+
+        else:
+
+            image_error = validate_images(
+                new_images,
+                required=False
             )
 
-        if not name:
-            error = 'Vui lòng nhập tên sản phẩm.'
 
-        elif not price:
-            error = 'Vui lòng nhập giá sản phẩm.'
+            if image_error:
 
-        elif not category_id:
-            error = 'Vui lòng chọn category.'
+                errors['images'] = (
+                    image_error
+                )
 
-        elif not brand_id:
-            error = 'Vui lòng chọn brand.'
 
-        if not error:
-            new_image_filenames = save_images(
-                new_images
+        if errors:
+
+            error = next(
+                iter(
+                    errors.values()
+                )
             )
 
-            final_images = (
-                remaining_images
-                + new_image_filenames
-            )
 
-            for image in delete_images:
-                if (
-                    image in old_images
-                    and default_storage.exists(image)
-                ):
-                    default_storage.delete(image)
+        else:
 
-            product.name = name
-            product.price = price
-            product.category_id = category_id
-            product.brand_id = brand_id
-            product.status = int(status)
+            new_image_filenames = []
 
-            if int(status) == 0:
-                product.sale = 0
 
-            else:
-                product.sale = sale or 0
+            try:
 
-            product.company = company
-            product.detail = detail
+                new_image_filenames = (
+                    save_images(
+                        new_images
+                    )
+                )
 
-            product.images = json.dumps(
-                final_images
-            )
 
-            product.save()
+                final_images = (
+                    remaining_images
+                    +
+                    new_image_filenames
+                )
 
-            return redirect(
-                'product:my_product'
-            )
+
+                set_product_data(
+                    product,
+                    data
+                )
+
+
+                product.images = json.dumps(
+                    final_images
+                )
+
+
+                product.save()
+
+
+                for image in delete_images:
+
+                    if default_storage.exists(
+                        image
+                    ):
+
+                        default_storage.delete(
+                            image
+                        )
+
+
+                return redirect(
+                    'product:my_product'
+                )
+
+
+            except Exception as e:
+
+                error = str(e)
+
 
     old_image_data = []
 
+
     for image in old_images:
+
         try:
-            image_url = default_storage.url(
-                image
+
+            image_url = (
+                default_storage.url(
+                    image
+                )
             )
 
         except Exception:
+
             image_url = ''
 
-        old_image_data.append({
-            'name': image,
-            'url': image_url,
-        })
 
-    cart = get_cart(request)
+        old_image_data.append(
+            {
+                'name': image,
+                'url': image_url,
+            }
+        )
+
+
+    cart = get_cart(
+        request
+    )
+
 
     return render(
         request,
         'edit-product.html',
         {
             'product': product,
+
             'categories': categories,
+
             'brands': brands,
+
             'old_images': old_images,
-            'old_image_data': old_image_data,
+
+            'old_image_data':
+                old_image_data,
+
             'error': error,
-            'cart_count': get_cart_count(cart),
+
+            'cart_count':
+                get_cart_count(
+                    cart
+                ),
         }
     )
-
 
 @non_superuser_required
 def delete_product(
@@ -1605,3 +1525,220 @@ def search_price(request):
     return JsonResponse({
         'html': html
     })
+
+def get_product_form_data(request):
+
+    return {
+        'name': request.POST.get(
+            'name',
+            ''
+        ).strip(),
+
+        'price': request.POST.get(
+            'price',
+            ''
+        ).strip(),
+
+        'category_id': request.POST.get(
+            'category',
+            ''
+        ),
+
+        'brand_id': request.POST.get(
+            'brand',
+            ''
+        ),
+
+        'status': request.POST.get(
+            'status',
+            '0'
+        ),
+
+        'sale': request.POST.get(
+            'sale',
+            '0'
+        ),
+
+        'company': request.POST.get(
+            'company',
+            ''
+        ).strip(),
+
+        'detail': request.POST.get(
+            'detail',
+            ''
+        ).strip(),
+    }
+
+def validate_product_data(data):
+
+    errors = {}
+
+
+    if not data['name']:
+
+        errors['name'] = (
+            'Tên sản phẩm không được để trống.'
+        )
+
+
+    if not data['price']:
+
+        errors['price'] = (
+            'Giá không được để trống.'
+        )
+
+    else:
+
+        try:
+
+            price = Decimal(
+                data['price']
+            )
+
+            if (
+                not price.is_finite()
+                or price < 0
+            ):
+
+                errors['price'] = (
+                    'Giá phải lớn hơn hoặc bằng 0.'
+                )
+
+            else:
+
+                data['price'] = price
+
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
+
+            errors['price'] = (
+                'Giá không hợp lệ.'
+            )
+
+
+    if not data['category_id']:
+
+        errors['category'] = (
+            'Vui lòng chọn category.'
+        )
+
+
+    if not data['brand_id']:
+
+        errors['brand'] = (
+            'Vui lòng chọn brand.'
+        )
+
+
+    try:
+
+        status = int(
+            data['status']
+        )
+
+        allowed_statuses = {
+            choice[0]
+            for choice
+            in Product
+            ._meta
+            .get_field('status')
+            .choices
+        }
+
+        if status not in allowed_statuses:
+            raise ValueError
+
+        data['status'] = status
+
+    except (
+        ValueError,
+        TypeError
+    ):
+
+        errors['status'] = (
+            'Trạng thái sản phẩm không hợp lệ.'
+        )
+
+        data['status'] = 0
+
+
+    if data['status'] == 0:
+
+        data['sale'] = Decimal(
+            '0'
+        )
+
+    else:
+
+        try:
+
+            sale = Decimal(
+                data['sale'] or '0'
+            )
+
+            if (
+                not sale.is_finite()
+                or sale < 0
+            ):
+
+                errors['sale'] = (
+                    'Giá sale không hợp lệ.'
+                )
+
+            else:
+
+                data['sale'] = sale
+
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
+
+            errors['sale'] = (
+                'Giá sale không hợp lệ.'
+            )
+
+
+    return errors
+
+def set_product_data(
+    product,
+    data
+):
+
+    product.name = (
+        data['name']
+    )
+
+    product.price = (
+        data['price']
+    )
+
+    product.category_id = (
+        data['category_id']
+    )
+
+    product.brand_id = (
+        data['brand_id']
+    )
+
+    product.status = (
+        data['status']
+    )
+
+    product.sale = (
+        data['sale']
+    )
+
+    product.company = (
+        data['company']
+    )
+
+    product.detail = (
+        data['detail']
+    )

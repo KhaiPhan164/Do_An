@@ -23,86 +23,92 @@
         width: 100%;
         height: 420px;
         object-fit: contain;
-        cursor: zoom-in;
     }
 
 
-    .zoom-title {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-
-        margin: 0;
-        padding: 8px 15px;
-
+    .view-product h3 {
         background: #fe980f;
+        bottom: 0;
         color: #ffffff;
-
+        font-family: 'Roboto', sans-serif;
         font-size: 14px;
-
-        pointer-events: none;
+        font-weight: 700;
+        margin-bottom: 0;
+        padding: 8px 20px;
+        position: absolute;
+        right: 0;
     }
 
 
-    .similar-product-wrapper {
-        display: flex;
-        align-items: center;
-
-        margin-top: 15px;
-
-        gap: 8px;
+    #similar-product {
+        margin-top: 20px;
+        position: relative;
     }
 
 
-    .thumbnail-container {
-        flex: 1;
-
-        display: flex;
-
-        justify-content: center;
-
-        gap: 8px;
+    #similar-product .carousel-inner {
+        width: 100%;
     }
 
 
-    .product-thumbnail {
-        width: 31%;
+    #similar-product .carousel-inner .item {
+        text-align: center;
+        padding-left: 0;
+    }
+
+
+    #similar-product .carousel-inner .item .product-thumbnail-link {
+        display: inline-block;
+        width: 28%;
+        margin: 0 1%;
+        vertical-align: middle;
+    }
+
+
+    #similar-product .carousel-inner .item .product-thumbnail {
+        width: 100%;
         height: 100px;
-
         object-fit: cover;
-
-        border: 2px solid #eeeeee;
-
+        margin: 0;
         padding: 3px;
-
-        cursor: pointer;
-
+        border: 2px solid #eeeeee;
         background: #ffffff;
+        cursor: pointer;
     }
 
 
-    .product-thumbnail:hover,
-    .product-thumbnail.active {
+    #similar-product .carousel-inner .item .product-thumbnail:hover,
+    #similar-product .carousel-inner .item .product-thumbnail.active {
         border-color: #fe980f;
     }
 
 
-    .image-control {
-        width: 30px;
-        height: 50px;
-
-        border: 0;
-
-        background: #fe980f;
-        color: #ffffff;
-
-        font-size: 20px;
-
-        cursor: pointer;
+    #similar-product .item-control {
+        position: absolute;
+        top: 35%;
+        z-index: 10;
     }
 
 
-    .image-control:hover {
+    #similar-product .left.item-control {
+        left: 0;
+    }
+
+
+    #similar-product .right.item-control {
+        right: 0;
+    }
+
+
+    #similar-product .item-control i {
+        background: #fe980f;
+        color: #ffffff;
+        font-size: 20px;
+        padding: 5px 10px;
+    }
+
+
+    #similar-product .item-control i:hover {
         background: #e58a0b;
     }
 
@@ -114,23 +120,17 @@
 
     .product-price {
         display: block;
-
         color: #fe980f;
-
         font-size: 30px;
         font-weight: bold;
-
         margin: 15px 0;
     }
 
 
     .old-price {
         display: inline-block;
-
         color: #999999;
-
         font-size: 18px;
-
         margin-left: 10px;
     }
 
@@ -138,64 +138,9 @@
     .detail-quantity {
         width: 60px;
         height: 33px;
-
         border: 1px solid #dddddd;
-
         text-align: center;
-
         margin-right: 10px;
-    }
-
-
-    .product-popup {
-        position: fixed;
-
-        display: none;
-
-        top: 0;
-        left: 0;
-
-        width: 100%;
-        height: 100%;
-
-        z-index: 99999;
-
-        background: rgba(0, 0, 0, 0.92);
-
-        align-items: center;
-        justify-content: center;
-    }
-
-
-    .product-popup.active {
-        display: flex;
-    }
-
-
-    .product-popup img {
-        max-width: 95%;
-        max-height: 95%;
-
-        object-fit: contain;
-    }
-
-
-    .product-popup-close {
-        position: absolute;
-
-        top: 15px;
-        right: 30px;
-
-        color: #ffffff;
-
-        font-size: 45px;
-
-        cursor: pointer;
-    }
-
-
-    .product-popup-close:hover {
-        color: #fe980f;
     }
 
 
@@ -211,7 +156,7 @@
         }
 
 
-        .product-thumbnail {
+        #similar-product .carousel-inner .item .product-thumbnail {
             height: 80px;
         }
 
@@ -261,6 +206,20 @@
                                     alt="{{ product.name }}"
                                 >
 
+
+                                <a
+                                    id="mainProductZoom"
+                                    href="{{ product.image_list.0 }}"
+                                    rel="prettyPhoto"
+                                >
+
+                                    <h3>
+                                        ZOOM
+                                    </h3>
+
+                                </a>
+
+
                             {% else %}
 
                                 <img
@@ -270,12 +229,20 @@
                                     alt="{{ product.name }}"
                                 >
 
+
+                                <a
+                                    id="mainProductZoom"
+                                    href="{% static 'images/product-details/1.jpg' %}"
+                                    rel="prettyPhoto"
+                                >
+
+                                    <h3>
+                                        ZOOM
+                                    </h3>
+
+                                </a>
+
                             {% endif %}
-
-
-                            <h3 class="zoom-title">
-                                ZOOM
-                            </h3>
 
 
                         </div>
@@ -284,52 +251,110 @@
 
                         {% if product.image_list %}
 
-                        <div class="similar-product-wrapper">
-
-
-                            <button
-                                type="button"
-                                id="prevImage"
-                                class="image-control"
+                            <div
+                                id="similar-product"
+                                class="carousel slide"
+                                data-ride="carousel"
+                                data-interval="false"
                             >
 
-                                <i class="fa fa-angle-left"></i>
 
-                            </button>
-
+                                <div class="carousel-inner">
 
 
-                            <div class="thumbnail-container">
+                                    {% for image in product.image_list %}
 
 
-                                {% for image in product.image_list|slice:":3" %}
+                                        {% if forloop.counter0|divisibleby:"3" %}
 
-                                    <img
-                                        src="{{ image }}"
-                                        data-full="{{ image }}"
-                                        class="product-thumbnail {% if forloop.first %}active{% endif %}"
-                                        alt="{{ product.name }}"
-                                    >
+                                            <div class="item {% if forloop.first %}active{% endif %}">
 
-                                {% endfor %}
+                                        {% endif %}
+
+
+                                            <a
+                                                href="javascript:void(0);"
+                                                class="product-thumbnail-link"
+                                            >
+
+                                                <img
+                                                    src="{{ image }}"
+                                                    data-full="{{ image }}"
+                                                    class="product-thumbnail {% if forloop.first %}active{% endif %}"
+                                                    alt="{{ product.name }}"
+                                                >
+
+                                            </a>
+
+
+                                        {% if forloop.counter|divisibleby:"3" or forloop.last %}
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                    {% endfor %}
+
+
+
+                                    {% if product.image_list|length <= 3 %}
+
+                                        <div class="item">
+
+
+                                            {% for image in product.image_list %}
+
+                                                <a
+                                                    href="javascript:void(0);"
+                                                    class="product-thumbnail-link"
+                                                >
+
+                                                    <img
+                                                        src="{{ image }}"
+                                                        data-full="{{ image }}"
+                                                        class="product-thumbnail"
+                                                        alt="{{ product.name }}"
+                                                    >
+
+                                                </a>
+
+                                            {% endfor %}
+
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+
+                                <a
+                                    class="left item-control"
+                                    href="#similar-product"
+                                    data-slide="prev"
+                                >
+
+                                    <i class="fa fa-angle-left"></i>
+
+                                </a>
+
+
+
+                                <a
+                                    class="right item-control"
+                                    href="#similar-product"
+                                    data-slide="next"
+                                >
+
+                                    <i class="fa fa-angle-right"></i>
+
+                                </a>
 
 
                             </div>
-
-
-
-                            <button
-                                type="button"
-                                id="nextImage"
-                                class="image-control"
-                            >
-
-                                <i class="fa fa-angle-right"></i>
-
-                            </button>
-
-
-                        </div>
 
                         {% endif %}
 
@@ -478,6 +503,7 @@
 
                             <div style="margin-top: 20px;">
 
+
                                 <label>
                                     Quantity:
                                 </label>
@@ -504,6 +530,7 @@
                                     Add to cart
 
                                 </button>
+
 
                             </div>
 
@@ -573,6 +600,7 @@
 
                             <div class="col-sm-12">
 
+
                                 <div class="detail-content">
 
 
@@ -595,6 +623,7 @@
 
 
                                 </div>
+
 
                             </div>
 
@@ -626,15 +655,18 @@
 
                                     <span>
 
+
                                         <input
                                             type="text"
                                             placeholder="Your Name"
                                         >
 
+
                                         <input
                                             type="email"
                                             placeholder="Email Address"
                                         >
+
 
                                     </span>
 
@@ -648,7 +680,9 @@
                                         type="button"
                                         class="btn btn-default pull-right"
                                     >
+
                                         Submit
+
                                     </button>
 
 
@@ -677,31 +711,6 @@
 
 </section>
 
-
-
-<div
-    id="productPopup"
-    class="product-popup"
->
-
-
-    <span
-        id="closePopup"
-        class="product-popup-close"
-    >
-        &times;
-    </span>
-
-
-    <img
-        id="popupImage"
-        src=""
-        alt="{{ product.name }}"
-    >
-
-
-</div>
-
 {% endblock %}
 
 
@@ -715,142 +724,81 @@ document.addEventListener(
     function () {
 
 
-        /*
-        ======================================
-        PRODUCT IMAGE
-        ======================================
-        */
-
-
         const mainImage =
             document.getElementById(
                 'mainProductImage'
             );
 
 
+        const mainProductZoom =
+            document.getElementById(
+                'mainProductZoom'
+            );
+
+
         const thumbnails =
-            Array.from(
-                document.querySelectorAll(
-                    '.product-thumbnail'
-                )
+            document.querySelectorAll(
+                '.product-thumbnail'
             );
-
-
-        const prevButton =
-            document.getElementById(
-                'prevImage'
-            );
-
-
-        const nextButton =
-            document.getElementById(
-                'nextImage'
-            );
-
-
-        const popup =
-            document.getElementById(
-                'productPopup'
-            );
-
-
-        const popupImage =
-            document.getElementById(
-                'popupImage'
-            );
-
-
-        const closePopup =
-            document.getElementById(
-                'closePopup'
-            );
-
-
-        let currentIndex = 0;
-
-
-
-        function changeImage(index) {
-
-
-            if (
-                !mainImage ||
-                thumbnails.length === 0
-            ) {
-                return;
-            }
-
-
-            if (index < 0) {
-
-                index =
-                    thumbnails.length - 1;
-
-            }
-
-
-            if (
-                index >= thumbnails.length
-            ) {
-
-                index = 0;
-
-            }
-
-
-            currentIndex = index;
-
-
-            mainImage.src =
-                thumbnails[
-                    currentIndex
-                ].dataset.full;
-
-
-            thumbnails.forEach(
-                function (thumbnail) {
-
-                    thumbnail
-                        .classList
-                        .remove(
-                            'active'
-                        );
-
-                }
-            );
-
-
-            thumbnails[
-                currentIndex
-            ]
-                .classList
-                .add(
-                    'active'
-                );
-
-
-        }
-
 
 
         thumbnails.forEach(
-            function (
-                thumbnail,
-                index
-            ) {
+            function (thumbnail) {
 
 
-                thumbnail
-                    .addEventListener(
-                        'click',
-                        function () {
+                thumbnail.addEventListener(
+                    'click',
+                    function () {
 
-                            changeImage(
-                                index
-                            );
+
+                        const fullImage =
+                            thumbnail.dataset.full;
+
+
+                        if (mainImage) {
+
+                            mainImage.src =
+                                fullImage;
 
                         }
-                    );
+
+
+                        if (mainProductZoom) {
+
+                            mainProductZoom.href =
+                                fullImage;
+
+                        }
+
+
+                        thumbnails.forEach(
+                            function (item) {
+
+
+                                if (
+                                    item.dataset.full ===
+                                    fullImage
+                                ) {
+
+                                    item.classList.add(
+                                        'active'
+                                    );
+
+                                } else {
+
+                                    item.classList.remove(
+                                        'active'
+                                    );
+
+                                }
+
+
+                            }
+                        );
+
+
+                    }
+                );
 
 
             }
@@ -858,183 +806,89 @@ document.addEventListener(
 
 
 
-        if (prevButton) {
-
-            prevButton
-                .addEventListener(
-                    'click',
-                    function () {
-
-                        changeImage(
-                            currentIndex - 1
-                        );
-
-                    }
-                );
-
-        }
+        if (
+            window.jQuery &&
+            window.jQuery.fn.carousel
+        ) {
 
 
-
-        if (nextButton) {
-
-            nextButton
-                .addEventListener(
-                    'click',
-                    function () {
-
-                        changeImage(
-                            currentIndex + 1
-                        );
-
-                    }
-                );
-
-        }
-
-
-
-        if (mainImage) {
-
-            mainImage
-                .addEventListener(
-                    'click',
-                    function () {
-
-
-                        if (!popup) {
-                            return;
-                        }
-
-
-                        popupImage.src =
-                            mainImage.src;
-
-
-                        popup
-                            .classList
-                            .add(
-                                'active'
-                            );
-
-
-                    }
-                );
-
-        }
-
-
-
-        if (closePopup) {
-
-            closePopup
-                .addEventListener(
-                    'click',
-                    function () {
-
-                        popup
-                            .classList
-                            .remove(
-                                'active'
-                            );
-
-                    }
-                );
-
-        }
-
-
-
-        if (popup) {
-
-            popup
-                .addEventListener(
-                    'click',
-                    function (event) {
-
-
-                        if (
-                            event.target === popup
-                        ) {
-
-                            popup
-                                .classList
-                                .remove(
-                                    'active'
-                                );
-
-                        }
-
-
-                    }
-                );
-
-        }
-
-
-
-        document
-            .addEventListener(
-                'keydown',
-                function (event) {
-
-
-                    if (
-                        event.key ===
-                        'Escape'
-                    ) {
-
-                        if (popup) {
-
-                            popup
-                                .classList
-                                .remove(
-                                    'active'
-                                );
-
-                        }
-
-                    }
-
-
-                    if (
-                        event.key ===
-                        'ArrowLeft'
-                        &&
-                        thumbnails.length > 0
-                    ) {
-
-                        changeImage(
-                            currentIndex - 1
-                        );
-
-                    }
-
-
-                    if (
-                        event.key ===
-                        'ArrowRight'
-                        &&
-                        thumbnails.length > 0
-                    ) {
-
-                        changeImage(
-                            currentIndex + 1
-                        );
-
-                    }
-
-
+            window.jQuery(
+                '#similar-product'
+            ).carousel(
+                {
+                    interval: false,
+                    wrap: true
                 }
             );
 
 
+        }
 
-        /*
-        ======================================
-        ADD TO CART
-        ======================================
-        */
+
+
+        if (
+            window.jQuery &&
+            window.jQuery.fn.prettyPhoto
+        ) {
+
+
+            window.jQuery(
+                "a[rel^='prettyPhoto']"
+            ).prettyPhoto();
+
+
+        }
+
+
+
+        document.addEventListener(
+            'keydown',
+            function (event) {
+
+
+                if (
+                    !window.jQuery ||
+                    !window.jQuery.fn.carousel
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    event.key === 'ArrowLeft'
+                ) {
+
+
+                    window.jQuery(
+                        '#similar-product'
+                    ).carousel(
+                        'prev'
+                    );
+
+
+                }
+
+
+                if (
+                    event.key === 'ArrowRight'
+                ) {
+
+
+                    window.jQuery(
+                        '#similar-product'
+                    ).carousel(
+                        'next'
+                    );
+
+
+                }
+
+
+            }
+        );
+
 
 
         const addToCartButton =
@@ -1062,205 +916,142 @@ document.addEventListener(
 
 
 
-        if (addToCartButton) {
+        if (
+            addToCartButton &&
+            quantityInput
+        ) {
 
 
-            addToCartButton
-                .addEventListener(
-                    'click',
-                    function () {
+            addToCartButton.addEventListener(
+                'click',
+                function () {
 
 
-                        const productId =
-                            addToCartButton
-                                .dataset
-                                .productId;
+                    const productId =
+                        addToCartButton
+                            .dataset
+                            .productId;
 
 
-                        let quantity =
-                            parseInt(
-                                quantityInput.value
-                            );
+                    let quantity =
+                        parseInt(
+                            quantityInput.value
+                        );
 
 
-                        if (
-                            !quantity
-                            ||
-                            quantity < 1
-                        ) {
-
-                            quantity = 1;
-
-                            quantityInput.value =
-                                1;
-
-                        }
+                    if (
+                        !quantity ||
+                        quantity < 1
+                    ) {
 
 
-
-                        /*
-                        Vì add_to_cart hiện tại
-                        mỗi request +1,
-                        gửi nhiều lần theo quantity.
-                        */
-
-                        const requests = [];
+                        quantity = 1;
 
 
-                        for (
-                            let i = 0;
-                            i < quantity;
-                            i++
-                        ) {
+                        quantityInput.value =
+                            1;
 
 
-                            requests.push(
-
-                                fetch(
-                                    "{% url 'product:add_to_cart' %}",
-                                    {
-
-                                        method:
-                                            'POST',
-
-                                        credentials:
-                                            'same-origin',
-
-                                        headers: {
-
-                                            'Content-Type':
-                                                'application/json',
-
-                                            'X-CSRFToken':
-                                                csrfToken
-
-                                        },
-
-                                        body:
-                                            JSON.stringify(
-                                                {
-                                                    product_id:
-                                                        productId
-                                                }
-                                            )
-
-                                    }
-                                )
-                                .then(
-                                    function (
-                                        response
-                                    ) {
-
-                                        return response
-                                            .json();
-
-                                    }
-                                )
-
-                            );
+                    }
 
 
-                        }
+                    const requests = [];
 
 
+                    for (
+                        let i = 0;
+                        i < quantity;
+                        i++
+                    ) {
 
-                        Promise
-                            .all(
-                                requests
+
+                        requests.push(
+
+                            fetch(
+                                "{% url 'product:add_to_cart' %}",
+                                {
+
+                                    method:
+                                        'POST',
+
+                                    credentials:
+                                        'same-origin',
+
+                                    headers: {
+
+                                        'Content-Type':
+                                            'application/json',
+
+                                        'X-CSRFToken':
+                                            csrfToken
+
+                                    },
+
+                                    body:
+                                        JSON.stringify(
+                                            {
+
+                                                product_id:
+                                                    productId
+
+                                            }
+                                        )
+
+                                }
                             )
                             .then(
                                 function (
-                                    results
+                                    response
                                 ) {
 
 
-                                    const lastResult =
-                                        results[
-                                            results.length - 1
-                                        ];
-
-
                                     if (
-                                        !lastResult
-                                        ||
-                                        !lastResult.success
+                                        !response.ok
                                     ) {
 
-                                        alert(
-                                            'Không thể thêm sản phẩm vào Cart.'
+
+                                        throw new Error(
+                                            'HTTP error ' +
+                                            response.status
                                         );
 
-                                        return;
 
                                     }
 
 
-                                    const cartCount =
-                                        document
-                                            .getElementById(
-                                                'cart-count'
-                                            );
-
-
-                                    if (
-                                        cartCount
-                                    ) {
-
-                                        cartCount
-                                            .textContent =
-                                                lastResult
-                                                    .cart_count;
-
-                                    }
-
-
-
-                                    const oldHTML =
-                                        addToCartButton
-                                            .innerHTML;
-
-
-                                    addToCartButton
-                                        .innerHTML =
-                                            '<i class="fa fa-check"></i> Added';
-
-
-                                    addToCartButton
-                                        .disabled =
-                                            true;
-
-
-                                    setTimeout(
-                                        function () {
-
-
-                                            addToCartButton
-                                                .innerHTML =
-                                                    oldHTML;
-
-
-                                            addToCartButton
-                                                .disabled =
-                                                    false;
-
-
-                                        },
-                                        1000
-                                    );
+                                    return response.json();
 
 
                                 }
                             )
-                            .catch(
-                                function (
-                                    error
+
+                        );
+
+
+                    }
+
+
+
+                    Promise
+                        .all(
+                            requests
+                        )
+                        .then(
+                            function (
+                                results
+                            ) {
+
+
+                                const lastResult =
+                                    results[
+                                        results.length - 1
+                                    ];
+
+
+                                if (
+                                    !lastResult ||
+                                    !lastResult.success
                                 ) {
-
-
-                                    console.error(
-                                        'Add to cart error:',
-                                        error
-                                    );
 
 
                                     alert(
@@ -1268,12 +1059,82 @@ document.addEventListener(
                                     );
 
 
+                                    return;
+
+
                                 }
-                            );
 
 
-                    }
-                );
+                                const cartCount =
+                                    document.getElementById(
+                                        'cart-count'
+                                    );
+
+
+                                if (cartCount) {
+
+
+                                    cartCount.textContent =
+                                        lastResult.cart_count;
+
+
+                                }
+
+
+                                const oldHTML =
+                                    addToCartButton.innerHTML;
+
+
+                                addToCartButton.innerHTML =
+                                    '<i class="fa fa-check"></i> Added';
+
+
+                                addToCartButton.disabled =
+                                    true;
+
+
+                                setTimeout(
+                                    function () {
+
+
+                                        addToCartButton.innerHTML =
+                                            oldHTML;
+
+
+                                        addToCartButton.disabled =
+                                            false;
+
+
+                                    },
+                                    1000
+                                );
+
+
+                            }
+                        )
+                        .catch(
+                            function (
+                                error
+                            ) {
+
+
+                                console.error(
+                                    'Add to cart error:',
+                                    error
+                                );
+
+
+                                alert(
+                                    'Không thể thêm sản phẩm vào Cart.'
+                                );
+
+
+                            }
+                        );
+
+
+                }
+            );
 
 
         }
@@ -1284,4 +1145,4 @@ document.addEventListener(
 
 </script>
 
-{% endblock %}
+{% endblock %}  
